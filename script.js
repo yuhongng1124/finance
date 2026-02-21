@@ -164,8 +164,21 @@ function openModal(type) {
 }
 
 function closeModal() {
-    document.getElementById('action-modal').classList.remove('remove');
     document.getElementById('action-modal').classList.remove('active');
+}
+
+function saveGym() {
+    const name = document.getElementById('gym-name').value;
+    const status = document.getElementById('grid-status')?.value || 'done';
+    // Fallback if the element name changed
+    const finalStatus = document.getElementById('gym-status').value;
+
+    if (name) {
+        const dateStr = new Date().toISOString().split('T')[0];
+        state.gymLogs[dateStr] = finalStatus;
+        closeModal();
+        renderAll();
+    }
 }
 
 function handleImageUpload(input) {
@@ -206,6 +219,35 @@ function saveEarning() {
         closeModal();
         renderAll();
     }
+}
+
+function filterAssets(type) {
+    document.querySelectorAll('.asset-tabs button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase() === type || (type === 'all' && btn.textContent === 'All')) {
+            btn.classList.add('active');
+        }
+    });
+
+    const list = document.getElementById('wealth-assets-list');
+    const filtered = type === 'all' ? state.assets : state.assets.filter(a => a.type === type);
+
+    list.innerHTML = filtered.map(a => `
+        <div class="asset-card">
+            <div class="a-left">
+                <img src="${a.img || 'https://via.placeholder.com/50'}" class="a-img" alt="">
+                <div>
+                    <p class="a-name">${a.name}</p>
+                    <p class="a-type">${a.type}</p>
+                </div>
+            </div>
+            <div class="a-right">
+                <p class="a-val">$${(a.value * a.price).toLocaleString()}</p>
+                <p class="a-sub">+0.00%</p>
+            </div>
+        </div>
+    `).join('');
+    lucide.createIcons();
 }
 
 // --- CHARTS ---

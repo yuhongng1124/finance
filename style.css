@@ -28,13 +28,15 @@ body {
 }
 
 .app-container {
-    max-width: 450px;
-    margin: 0 auto;
-    height: 100vh;
+    max-width: 400px;
+    margin: 20px auto;
+    height: 90vh;
     background: var(--ios-bg);
     position: relative;
     overflow-y: auto;
-    padding-bottom: 100px;
+    padding-bottom: 90px;
+    border-radius: 40px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
 }
 
 /* Views Logic */
@@ -81,7 +83,7 @@ body {
 }
 
 .ios-header-white h1 {
-    font-size: 26px;
+    font-size: 20px;
     font-weight: 800;
 }
 
@@ -115,9 +117,9 @@ body {
 }
 
 .net-worth-card h1 {
-    font-size: 42px;
+    font-size: 32px;
     font-weight: 800;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .target-chip {
@@ -360,10 +362,16 @@ body {
 /* --- PROGRESS & GOAL --- */
 .growth-chart-card {
     background: var(--ios-card);
-    margin: 0 25px 25px;
-    border-radius: 25px;
-    padding: 25px;
+    margin: 0 20px 20px;
+    border-radius: 20px;
+    padding: 15px;
     box-shadow: var(--shadow);
+}
+
+.chart-container {
+    height: 150px;
+    width: 100%;
+    position: relative;
 }
 
 .milestone-card {
