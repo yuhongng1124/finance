@@ -53,72 +53,97 @@ function showView(viewId) {
 // --- RENDERING ---
 function renderAll() {
     const total = calculateNetWorth();
-    document.getElementById('home-net-worth').textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
+    const netWorthEl = document.getElementById('home-net-worth');
+    if (netWorthEl) netWorthEl.textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
 
-    // Task List with Category badges
+    // Task List
     const taskList = document.getElementById('tasks-list');
-    taskList.innerHTML = state.tasks.map(task => `
-        <div class="task-item ${task.done ? 'done' : ''}" onclick="toggleTask(${task.id})">
-            <div class="task-checkbox">${task.done ? '<i data-lucide="check"></i>' : ''}</div>
-            <div class="task-content">
-                <span class="task-text">${task.text}</span>
+    if (taskList) {
+        taskList.innerHTML = state.tasks.map(task => `
+            <div class="task-item ${task.done ? 'done' : ''}" onclick="toggleTask(${task.id})">
+                <div class="task-checkbox">${task.done ? '<i data-lucide="check"></i>' : ''}</div>
+                <div class="task-content">
+                    <span class="task-text">${task.text}</span>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    }
 
-    const doneCount = state.tasks.filter(t => t.done).length;
-    document.getElementById('task-count').textContent = `${doneCount}/${state.tasks.length}`;
+    const taskCountEl = document.getElementById('task-count');
+    if (taskCountEl) {
+        const doneCount = state.tasks.filter(t => t.done).length;
+        taskCountEl.textContent = `${doneCount}/${state.tasks.length}`;
+    }
 
-    // PR Wall
-    document.getElementById('pr-bench').textContent = `${state.prWall.bench}kg`;
-    document.getElementById('pr-dead').textContent = `${state.prWall.dead}kg`;
-    document.getElementById('pr-squat').textContent = `${state.prWall.squat}kg`;
+    // PR Wall (Safety checks for each weight)
+    const setPr = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = `${val}kg`;
+    };
+    setPr('pr-bench', state.prWall.bench);
+    setPr('pr-dead', state.prWall.dead);
+    setPr('pr-squat', state.prWall.squat);
 
-    // Wealth List with Logo Automation & PnL
+    // Wealth List
     const wealthList = document.getElementById('wealth-assets-list');
-    const filtered = state.activeFilter === 'all' ? state.assets : state.assets.filter(a => a.type === state.activeFilter);
-    wealthList.innerHTML = filtered.map(a => {
-        const valueUSD = a.currency === 'USD' ? (a.value * a.price) : (a.value * a.price / state.settings.myrRate);
-        const costUSD = a.currency === 'USD' ? (a.value * a.cost) : (a.value * a.cost / state.settings.myrRate);
-        const roi = (((valueUSD - costUSD) / costUSD) * 100).toFixed(1);
-        const logo = a.type === 'crypto' ? `https://cryptologos.cc/logos/${a.name.toLowerCase().replace(' ', '-')}-${a.symbol.toLowerCase()}-logo.png` : `https://logo.clearbit.com/${a.name.toLowerCase().replace(' ', '')}.com`;
+    if (wealthList) {
+        const filtered = state.activeFilter === 'all' ? state.assets : state.assets.filter(a => a.type === state.activeFilter);
+        wealthList.innerHTML = filtered.map(a => {
+            const valueUSD = a.currency === 'USD' ? (a.value * a.price) : (a.value * a.price / state.settings.myrRate);
+            const costUSD = a.currency === 'USD' ? (a.value * a.cost) : (a.value * a.cost / state.settings.myrRate);
+            const roi = (((valueUSD - costUSD) / costUSD) * 100).toFixed(1);
+            const logo = a.type === 'crypto' ? `https://cryptologos.cc/logos/${a.name.toLowerCase().replace(' ', '-')}-${a.symbol.toLowerCase()}-logo.png` : `https://logo.clearbit.com/${a.name.toLowerCase().replace(' ', '')}.com`;
 
-        return `
-            <div class="asset-card">
-                <div class="a-left">
-                    <img src="${logo}" class="a-img" onerror="this.src='https://ui-avatars.com/api/?name=${a.symbol}&background=random'">
-                    <div>
-                        <p class="a-name">${a.symbol}</p>
-                        <p class="a-type">${a.name} (${a.currency})</p>
+            return `
+                <div class="asset-card">
+                    <div class="a-left">
+                        <img src="${logo}" class="a-img" onerror="this.src='https://ui-avatars.com/api/?name=${a.symbol}&background=random'">
+                        <div>
+                            <p class="a-name">${a.symbol}</p>
+                            <p class="a-type">${a.name} (${a.currency})</p>
+                        </div>
+                    </div>
+                    <div class="a-right">
+                        <p class="a-val">$${valueUSD.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                        <p class="a-sub ${roi >= 0 ? 'positive' : 'negative'}">${roi >= 0 ? '+' : ''}${roi}%</p>
                     </div>
                 </div>
-                <div class="a-right">
-                    <p class="a-val">$${valueUSD.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
-                    <p class="a-sub ${roi >= 0 ? 'positive' : 'negative'}">${roi >= 0 ? '+' : ''}${roi}%</p>
-                </div>
-            </div>
-        `;
-    }).join('');
+            `;
+        }).join('');
+    }
 
     // Archon Survival Logic
-    const emergencyCash = state.assets.filter(a => a.type === 'bank').reduce((sum, a) => sum + (a.currency === 'USD' ? a.value : a.value / state.settings.myrRate), 0);
-    const survivalDays = Math.round((emergencyCash / (state.settings.monthlyBurn / 30)));
-    document.getElementById('survival-runway').textContent = `${survivalDays} Days`;
-    document.getElementById('survival-status').textContent = survivalDays > 180 ? 'Fortress' : 'Warning';
+    const survivalEl = document.getElementById('survival-runway');
+    if (survivalEl) {
+        const emergencyCash = state.assets.filter(a => a.type === 'bank').reduce((sum, a) => sum + (a.currency === 'USD' ? a.value : a.value / state.settings.myrRate), 0);
+        const survivalDays = Math.round((emergencyCash / (state.settings.monthlyBurn / 30)));
+        survivalEl.textContent = `${survivalDays} Days`;
+        const statusEl = document.getElementById('survival-status');
+        if (statusEl) statusEl.textContent = survivalDays > 180 ? 'Fortress' : 'Warning';
+    }
 
     // Soul / Prophet Logic
-    const remaining = state.targetGoal - total;
-    const years = (remaining / (2500 * 12)).toFixed(1); // Assuming 2.5k savings/mo
-    document.getElementById('time-prediction').textContent = years;
+    const prophecyEl = document.getElementById('time-prediction');
+    if (prophecyEl) {
+        const remaining = state.targetGoal - total;
+        const years = (remaining / (2500 * 12)).toFixed(1);
+        prophecyEl.textContent = years;
+    }
 
     // Junk calculation
-    const junkTotal = state.expenses.filter(e => e.type === 'junk').reduce((sum, e) => sum + e.amount, 0);
-    document.getElementById('junk-total').textContent = `$${junkTotal}`;
-    // Future value logic: Junk * 1.1^5 (10% growth) * 5 (just a multiplier for dramatic effect)
-    document.getElementById('future-btc').textContent = `$${Math.round(junkTotal * 7.5)}`;
+    const junkEl = document.getElementById('junk-total');
+    if (junkEl) {
+        const junkTotal = state.expenses.filter(e => e.type === 'junk').reduce((sum, e) => sum + e.amount, 0);
+        junkEl.textContent = `$${junkTotal}`;
+        const futureEl = document.getElementById('future-btc');
+        if (futureEl) futureEl.textContent = `$${Math.round(junkTotal * 7.5)}`;
+    }
 
-    const totalVol = state.gymVolume.reduce((sum, v) => sum + v.vol, 0);
-    document.getElementById('training-volume').textContent = totalVol.toLocaleString();
+    const volEl = document.getElementById('training-volume');
+    if (volEl) {
+        const totalVol = state.gymVolume.reduce((sum, v) => sum + v.vol, 0);
+        volEl.textContent = totalVol.toLocaleString();
+    }
 
     if (state.allocationChart) updateAllocChart();
 }
