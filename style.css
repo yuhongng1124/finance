@@ -22,22 +22,43 @@
 
 body {
     font-family: 'Outfit', sans-serif;
-    background-color: var(--ios-bg);
+    background-color: #000;
     color: var(--ios-text);
-    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
+    overflow: hidden;
 }
 
 .app-container {
-    max-width: 400px;
-    margin: 20px auto;
-    height: 90vh;
+    width: 100%;
+    max-width: 390px;
+    /* iPhone 13/14/15 size */
+    height: 844px;
+    /* iPhone height */
+    max-height: 95vh;
     background: var(--ios-bg);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 44px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+    border: 8px solid #1c1c1e;
+    overflow: hidden;
+}
+
+.view-scroll-area {
+    flex: 1;
     overflow-y: auto;
-    padding-bottom: 90px;
-    border-radius: 40px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    padding-bottom: 100px;
+    scrollbar-width: none;
+}
+
+.view-scroll-area::-webkit-scrollbar {
+    display: none;
 }
 
 /* --- HEADERS --- */
@@ -190,16 +211,20 @@ body {
 
 /* --- WEALTH & ALLOCATION --- */
 .allocation-section {
-    padding: 20px 25px;
+    padding: 20px;
     display: flex;
     align-items: center;
     gap: 20px;
+    background: var(--ios-card);
+    margin: 20px;
+    border-radius: 24px;
 }
 
 .chart-box {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     position: relative;
+    flex-shrink: 0;
 }
 
 .allocation-stats {
@@ -271,16 +296,18 @@ body {
 }
 
 .countdown-radial {
-    width: 180px;
-    height: 180px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
-    border: 10px solid #222;
-    margin: 0 auto 30px;
+    border: 8px solid #1c1c1e;
+    margin: 0 auto 20px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
-    overflow: hidden;
+    background: radial-gradient(circle, #1c1c1e 0%, #000 100%);
+    box-shadow: inset 0 0 20px rgba(10, 132, 255, 0.2);
 }
 
 .countdown-radial::before {
@@ -479,9 +506,43 @@ body {
 }
 
 /* --- MODAL --- */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: none;
+    align-items: flex-end;
+}
+
 .modal-content.dark {
-    background: #111;
-    border: 1px solid #333;
+    background: #1c1c1e;
+    width: 100%;
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    padding: 30px 20px 50px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+input,
+select {
+    background: #2c2c2e;
+    border: 1px solid #3a3a3c;
+    color: white;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 16px;
+    width: 100%;
 }
 
 .save-btn {
@@ -491,13 +552,6 @@ body {
     font-weight: 800;
     font-size: 16px;
     margin-top: 15px;
-}
-
-input {
-    background: #1C1C1E;
-    border: 1px solid #333;
-    color: white;
-    margin-bottom: 15px;
 }
 
 /* Transitions & Micro-animations */

@@ -17,150 +17,154 @@
 <body class="dark-theme">
     <div class="app-container">
 
-        <!-- 1. HOME VIEW (DAILY MISSIONS & XP) -->
-        <main id="home-view" class="view active">
-            <header class="ios-header-vibrant">
-                <div class="header-top">
-                    <div class="user-info">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar">
-                        <div class="xp-stack">
-                            <span class="rank">LEVEL 12 ARCHON</span>
-                            <div class="xp-bar">
-                                <div class="xp-progress" style="width: 65%;"></div>
+        <div class="view-scroll-area">
+            <!-- 1. HOME VIEW (DAILY MISSIONS & XP) -->
+            <main id="home-view" class="view active">
+                <header class="ios-header-vibrant">
+                    <div class="header-top">
+                        <div class="user-info">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile"
+                                class="avatar">
+                            <div class="xp-stack">
+                                <span class="rank">LEVEL 12 ARCHON</span>
+                                <div class="xp-bar">
+                                    <div class="xp-progress" style="width: 65%;"></div>
+                                </div>
                             </div>
                         </div>
+                        <div class="streak-badge">
+                            <i data-lucide="flame"></i>
+                            <span id="streak-days">7</span>
+                        </div>
                     </div>
-                    <div class="streak-badge">
-                        <i data-lucide="flame"></i>
-                        <span id="streak-days">7</span>
+                    <div class="net-worth-card">
+                        <p>Total Net Worth</p>
+                        <h1 id="home-net-worth">$0.00</h1>
+                        <div class="target-chip">
+                            <i data-lucide="crosshair"></i>
+                            <span>1.0M Goal</span>
+                        </div>
                     </div>
-                </div>
-                <div class="net-worth-card">
-                    <p>Total Net Worth</p>
-                    <h1 id="home-net-worth">$0.00</h1>
-                    <div class="target-chip">
-                        <i data-lucide="crosshair"></i>
-                        <span>1.0M Goal</span>
+                </header>
+
+                <section class="daily-tasks-section">
+                    <div class="section-title">
+                        <h3>Daily Self-Discipline</h3>
+                        <span id="task-count">0/3</span>
                     </div>
-                </div>
-            </header>
+                    <div id="tasks-list" class="tasks-container">
+                        <!-- Tasks injected -->
+                    </div>
+                </section>
+            </main>
 
-            <section class="daily-tasks-section">
-                <div class="section-title">
-                    <h3>Daily Self-Discipline</h3>
-                    <span id="task-count">0/3</span>
-                </div>
-                <div id="tasks-list" class="tasks-container">
-                    <!-- Tasks injected -->
-                </div>
-            </section>
-        </main>
+            <!-- 2. GYM VIEW (LOGS & PR WALL) -->
+            <main id="gym-view" class="view">
+                <header class="ios-header-transparent">
+                    <i data-lucide="chevron-left" class="back-icon" onclick="showView('home')"></i>
+                    <h1>Growth Engine</h1>
+                    <div class="header-right"></div>
+                </header>
 
-        <!-- 2. GYM VIEW (LOGS & PR WALL) -->
-        <main id="gym-view" class="view">
-            <header class="ios-header-transparent">
-                <i data-lucide="chevron-left" class="back-icon" onclick="showView('home')"></i>
-                <h1>Growth Engine</h1>
-                <div class="header-right"></div>
-            </header>
-
-            <div class="pr-wall">
-                <div class="pr-card">
-                    <span class="label">Bench</span>
-                    <span class="val" id="pr-bench">100kg</span>
-                </div>
-                <div class="pr-card">
-                    <span class="label">Deadlift</span>
-                    <span class="val" id="pr-dead">140kg</span>
-                </div>
-                <div class="pr-card">
-                    <span class="label">Squat</span>
-                    <span class="val" id="pr-squat">120kg</span>
-                </div>
-            </div>
-
-            <div class="calendar-card dark">
-                <div id="calendar-days" class="calendar-grid">
-                    <!-- Calendar days -->
-                </div>
-            </div>
-
-            <section class="records-section">
-                <div class="section-title">
-                    <h3>Activity History</h3>
-                </div>
-                <div id="gym-records-list" class="activity-list"></div>
-            </section>
-        </main>
-
-        <!-- 3. WEALTH VIEW (ASSETS & ALLOCATION) -->
-        <main id="wealth-view" class="view">
-            <header class="ios-header-transparent">
-                <h1>Empire</h1>
-                <div class="header-right"></div>
-            </header>
-
-            <div class="allocation-section">
-                <div class="chart-box">
-                    <canvas id="assetAllocationChart"></canvas>
-                </div>
-                <div class="allocation-stats">
-                    <div class="stat-mini"><span class="label">DCA AVG</span><span id="dca-cost">$4.2k</span></div>
-                    <div class="stat-mini"><span class="label">ROI</span><span class="val positive">+18%</span></div>
-                </div>
-            </div>
-
-            <div class="asset-tabs">
-                <button class="active" onclick="filterAssets('all')">All</button>
-                <button onclick="filterAssets('stock')">Stocks</button>
-                <button onclick="filterAssets('crypto')">Crypto</button>
-                <button onclick="filterAssets('bank')">Bank</button>
-            </div>
-
-            <section class="assets-scroll">
-                <div id="wealth-assets-list" class="assets-stack"></div>
-            </section>
-        </main>
-
-        <!-- 4. SOUL VIEW (TIME & WISDOM) -->
-        <main id="progress-view" class="view">
-            <header class="ios-header-transparent">
-                <h1>Prophecy</h1>
-                <div class="header-right"></div>
-            </header>
-
-            <section class="goal-countdown">
-                <div class="countdown-radial">
-                    <div class="inner-circle">
-                        <p>ETA to $1M</p>
-                        <h2 id="time-prediction">5.4</h2>
-                        <span>YEARS</span>
+                <div class="pr-wall">
+                    <div class="pr-card">
+                        <span class="label">Bench</span>
+                        <span class="val" id="pr-bench">100kg</span>
+                    </div>
+                    <div class="pr-card">
+                        <span class="label">Deadlift</span>
+                        <span class="val" id="pr-dead">140kg</span>
+                    </div>
+                    <div class="pr-card">
+                        <span class="label">Squat</span>
+                        <span class="val" id="pr-squat">120kg</span>
                     </div>
                 </div>
-                <div class="velocity-info">
-                    <p>Current Savings Velocity</p>
-                    <h4>$2,450 / month</h4>
-                </div>
-            </section>
 
-            <section class="soul-wisdom">
-                <div class="motto-card">
-                    <i data-lucide="quote"></i>
-                    <p>"The best time to plant a tree was 20 years ago. The second best time is now."</p>
-                </div>
-
-                <div class="opportunity-cost-card">
-                    <div class="oc-header">
-                        <i data-lucide="alert-triangle"></i>
-                        <span>Impulse Spending Warning</span>
-                    </div>
-                    <div class="oc-body">
-                        <p>Total unnecessary spend: <strong id="junk-total">$120</strong></p>
-                        <p class="oc-future">Future value in BTC @ 5 yrs: <span id="future-btc">$840</span></p>
+                <div class="calendar-card dark">
+                    <div id="calendar-days" class="calendar-grid">
+                        <!-- Calendar days -->
                     </div>
                 </div>
-            </section>
-        </main>
+
+                <section class="records-section">
+                    <div class="section-title">
+                        <h3>Activity History</h3>
+                    </div>
+                    <div id="gym-records-list" class="activity-list"></div>
+                </section>
+            </main>
+
+            <!-- 3. WEALTH VIEW (ASSETS & ALLOCATION) -->
+            <main id="wealth-view" class="view">
+                <header class="ios-header-transparent">
+                    <h1>Empire</h1>
+                    <div class="header-right"></div>
+                </header>
+
+                <div class="allocation-section">
+                    <div class="chart-box">
+                        <canvas id="assetAllocationChart"></canvas>
+                    </div>
+                    <div class="allocation-stats">
+                        <div class="stat-mini"><span class="label">DCA AVG</span><span id="dca-cost">$4.2k</span></div>
+                        <div class="stat-mini"><span class="label">ROI</span><span class="val positive">+18%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="asset-tabs">
+                    <button class="active" onclick="filterAssets('all')">All</button>
+                    <button onclick="filterAssets('stock')">Stocks</button>
+                    <button onclick="filterAssets('crypto')">Crypto</button>
+                    <button onclick="filterAssets('bank')">Bank</button>
+                </div>
+
+                <section class="assets-scroll">
+                    <div id="wealth-assets-list" class="assets-stack"></div>
+                </section>
+            </main>
+
+            <!-- 4. SOUL VIEW (TIME & WISDOM) -->
+            <main id="progress-view" class="view">
+                <header class="ios-header-transparent">
+                    <h1>Prophecy</h1>
+                    <div class="header-right"></div>
+                </header>
+
+                <section class="goal-countdown">
+                    <div class="countdown-radial">
+                        <div class="inner-circle">
+                            <p>ETA to $1M</p>
+                            <h2 id="time-prediction">5.4</h2>
+                            <span>YEARS</span>
+                        </div>
+                    </div>
+                    <div class="velocity-info">
+                        <p>Current Savings Velocity</p>
+                        <h4>$2,450 / month</h4>
+                    </div>
+                </section>
+
+                <section class="soul-wisdom">
+                    <div class="motto-card">
+                        <i data-lucide="quote"></i>
+                        <p>"The best time to plant a tree was 20 years ago. The second best time is now."</p>
+                    </div>
+
+                    <div class="opportunity-cost-card">
+                        <div class="oc-header">
+                            <i data-lucide="alert-triangle"></i>
+                            <span>Impulse Training</span>
+                        </div>
+                        <div class="oc-body">
+                            <p>Total unnecessary spend: <strong id="junk-total">$120</strong></p>
+                            <p class="oc-future">Future value in BTC @ 5 yrs: <span id="future-btc">$840</span></p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
 
         <!-- FLOATING ACTION MENU -->
         <div id="floating-menu" class="menu-overlay">
