@@ -393,11 +393,11 @@ body {
 
 /* --- FLOATING MENU --- */
 .menu-overlay {
-    position: fixed;
+    position: absolute;
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%) scale(0.8);
-    background: var(--ios-blur);
+    background: rgba(28, 28, 30, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 30px;
     padding: 10px;
@@ -514,20 +514,21 @@ body {
 
 /* --- NAV BAR --- */
 .ios-nav {
-    position: fixed;
+    position: absolute;
     bottom: 25px;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
-    max-width: 380px;
     height: 75px;
-    background: var(--ios-blur);
+    background: rgba(28, 28, 30, 0.85);
+    backdrop-filter: blur(20px);
     border-radius: 35px;
     display: flex;
     align-items: center;
     justify-content: space-around;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     border: 1px solid #333;
+    z-index: 1000;
 }
 
 .nav-item {
@@ -577,6 +578,10 @@ body {
     align-items: flex-end;
 }
 
+.modal-overlay.active {
+    display: flex;
+}
+
 .modal-content.dark {
     background: #1c1c1e;
     width: 100%;
@@ -584,6 +589,7 @@ body {
     border-top-right-radius: 32px;
     padding: 30px 20px 50px;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    color: white;
 }
 
 .form-section {

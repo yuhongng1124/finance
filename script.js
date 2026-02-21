@@ -16,6 +16,7 @@ let state = {
         { id: 2, symbol: "BTC", name: "Bitcoin", type: "crypto", value: 0.12, price: 51840, cost: 42000, currency: 'USD' },
         { id: 3, symbol: "MYB", name: "Maybank", type: "bank", value: 4500, price: 1, cost: 1, currency: 'MYR' }
     ],
+    activeFilter: 'all',
     expenses: [{ id: 1, name: "Venti Latte", amount: 7, type: "junk", date: "2026-02-21" }],
     targetGoal: 1000000,
     allocationChart: null,
@@ -37,13 +38,16 @@ function showView(viewId) {
 
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
-        if (item.getAttribute('onclick')?.includes(viewId)) item.classList.add('active');
+        // Match viewId in onclick attribute
+        if (item.getAttribute('onclick')?.includes(`'${viewId}'`)) item.classList.add('active');
     });
 
-    if (viewId === 'wealth') updateAllocChart();
+    if (viewId === 'wealth' || (viewId === 'home' && document.getElementById('assetAllocationChart'))) {
+        updateAllocChart();
+    }
     renderAll();
     lucide.createIcons();
-    if (state.menuOpen) toggleMenu(); // Close menu on view switch
+    if (state.menuOpen) toggleMenu();
 }
 
 // --- RENDERING ---
@@ -72,11 +76,12 @@ function renderAll() {
 
     // Wealth List with Logo Automation & PnL
     const wealthList = document.getElementById('wealth-assets-list');
-    wealthList.innerHTML = state.assets.map(a => {
+    const filtered = state.activeFilter === 'all' ? state.assets : state.assets.filter(a => a.type === state.activeFilter);
+    wealthList.innerHTML = filtered.map(a => {
         const valueUSD = a.currency === 'USD' ? (a.value * a.price) : (a.value * a.price / state.settings.myrRate);
         const costUSD = a.currency === 'USD' ? (a.value * a.cost) : (a.value * a.cost / state.settings.myrRate);
         const roi = (((valueUSD - costUSD) / costUSD) * 100).toFixed(1);
-        const logo = a.type === 'crypto' ? `https://cryptologos.cc/logos/${a.name.toLowerCase()}-${a.symbol.toLowerCase()}-logo.png` : `https://logo.clearbit.com/${a.name.toLowerCase().replace(' ', '')}.com`;
+        const logo = a.type === 'crypto' ? `https://cryptologos.cc/logos/${a.name.toLowerCase().replace(' ', '-')}-${a.symbol.toLowerCase()}-logo.png` : `https://logo.clearbit.com/${a.name.toLowerCase().replace(' ', '')}.com`;
 
         return `
             <div class="asset-card">
@@ -112,7 +117,18 @@ function renderAll() {
     // Future value logic: Junk * 1.1^5 (10% growth) * 5 (just a multiplier for dramatic effect)
     document.getElementById('future-btc').textContent = `$${Math.round(junkTotal * 7.5)}`;
 
+    const totalVol = state.gymVolume.reduce((sum, v) => sum + v.vol, 0);
+    document.getElementById('training-volume').textContent = totalVol.toLocaleString();
+
     if (state.allocationChart) updateAllocChart();
+}
+
+function filterAssets(type) {
+    state.activeFilter = type;
+    document.querySelectorAll('.asset-tabs button').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${type}'`));
+    });
+    renderAll();
 }
 
 // --- INTERACTIVE ACTIONS ---
@@ -237,6 +253,8 @@ function saveGym() {
         if (name.toLowerCase().includes('bench')) state.prWall.bench = weight;
         if (name.toLowerCase().includes('dead')) state.prWall.dead = weight;
         if (name.toLowerCase().includes('squat')) state.prWall.squat = weight;
+
+        state.gymVolume.push({ date: new Date().toLocaleDateString(), vol: weight * 10 }); // Dummy vol calc
     }
     const today = new Date().toISOString().split('T')[0];
     state.gymLogs[today] = 'done';
@@ -245,7 +263,23 @@ function saveGym() {
 }
 
 function saveAsset() {
-    // Basic implementation for demo
-    closeModal();
-    renderAll();
+    const symbol = document.getElementById('asset-name').value.toUpperCase();
+    const qty = parseFloat(document.getElementById('asset-value').value);
+    const type = document.getElementById('asset-type').value;
+
+    if (symbol && qty > 0) {
+        state.assets.push({
+            id: Date.now(),
+            symbol: symbol,
+            name: symbol, // Simulating name for demo
+            type: type,
+            value: qty,
+            price: type === 'crypto' ? 51000 : 500, // Dummy prices
+            cost: type === 'crypto' ? 51000 : 500,
+            currency: 'USD'
+        });
+        closeModal();
+        renderAll();
+        updateAllocChart();
+    }
 }
