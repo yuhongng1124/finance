@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finance App - Expense Calculator</title>
+    <title>Finance & Fitness - Life Planner</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
     <div class="app-container">
-        <!-- Home View -->
+        <!-- 1. DASHBOARD VIEW (HOME) -->
         <main id="home-view" class="view active">
             <header class="home-header">
                 <div class="header-top">
@@ -22,241 +22,197 @@
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar">
                         <div class="status-dot"></div>
                     </div>
-                    <div class="location-picker">
-                        <span>Malaysia</span>
-                        <i data-lucide="chevron-down"></i>
+                    <div class="header-title">
+                        <h2>Overview</h2>
                     </div>
+                    <i data-lucide="bell" class="header-icon"></i>
                 </div>
 
-                <div class="featured-banner">
-                    <div class="banner-content">
-                        <p class="banner-subtitle">Special Fortune Card | Get it for free</p>
-                        <h1 class="banner-title">Prosperity & Finance</h1>
-                        <button class="banner-btn">Details</button>
-                    </div>
-                    <div class="banner-card-container">
-                        <div class="god-wealth-card">
-                            <div class="card-chip"></div>
-                            <div class="card-logo">Finance</div>
-                            <div class="card-number">**** **** **** 2026</div>
-                        </div>
+                <div class="total-wealth-banner">
+                    <p class="banner-label">Net Wealth</p>
+                    <h1 id="total-net-worth">$0.00</h1>
+                    <div class="wealth-change positive">
+                        <i data-lucide="trending-up"></i>
+                        <span>+2.4% this month</span>
                     </div>
                 </div>
             </header>
 
-            <section class="quick-actions">
-                <div class="action-item">
-                    <div class="action-icon"><i data-lucide="qr-code"></i></div>
-                    <span>Scan</span>
-                </div>
-                <div class="action-item">
-                    <div class="action-icon"><i data-lucide="landmark"></i></div>
-                    <span>Bank</span>
-                </div>
-                <div class="action-item">
-                    <div class="action-icon"><i data-lucide="smartphone"></i></div>
-                    <span>eSIM</span>
-                </div>
-                <div class="action-item">
-                    <div class="action-icon"><i data-lucide="credit-card"></i></div>
-                    <span>Cards</span>
-                </div>
-                <div class="action-item">
-                    <div class="action-icon"><i data-lucide="plus"></i></div>
-                    <span>More</span>
-                </div>
-            </section>
-
-            <section class="main-card-section">
-                <div class="balance-card">
-                    <div class="balance-info">
-                        <h3>Bank Card</h3>
-                        <div class="balance-amount">
-                            <span class="currency">$</span>
-                            <span class="whole">1</span>
-                            <span class="decimal">.11</span>
-                            <span class="top-up">Top up <i data-lucide="chevron-right"></i></span>
-                        </div>
-                        <p class="card-id">**** 1180</p>
+            <section class="dashboard-cards">
+                <div class="dash-card gym-summary" onclick="showView('gym')">
+                    <div class="card-icon"><i data-lucide="dumbbell"></i></div>
+                    <div class="card-info">
+                        <h3>Gym Track</h3>
+                        <p id="last-workout">No records yet</p>
                     </div>
-                    <div class="card-visual">
-                        <div class="mini-card">
-                             <div class="mini-card-arrow"><i data-lucide="chevron-right"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="transactions-section">
-                <div class="section-header">
-                    <h2>Recent Transactions</h2>
                     <i data-lucide="chevron-right"></i>
                 </div>
-                <div class="transaction-list">
-                    <div class="transaction-item">
-                        <div class="item-icon purchase"><i data-lucide="shopping-bag"></i></div>
-                        <div class="item-details">
-                            <p class="item-title">Purchase Payment</p>
-                            <p class="item-meta">Visa (1180)</p>
-                        </div>
-                        <div class="item-amount negative">
-                            <p>-1.89 USD</p>
-                            <p class="item-date">2026-02-14 11:50</p>
-                        </div>
+                <div class="dash-card goal-summary" onclick="showView('goals')">
+                    <div class="card-icon"><i data-lucide="target"></i></div>
+                    <div class="card-info">
+                        <h3>Active Goal</h3>
+                        <p id="goal-progress">Set your first goal</p>
                     </div>
-                    <div class="transaction-item">
-                        <div class="item-icon refund"><i data-lucide="arrow-down-left"></i></div>
-                        <div class="item-details">
-                            <p class="item-title">Top Up</p>
-                            <p class="item-meta">Visa (1180)</p>
-                        </div>
-                        <div class="item-amount positive">
-                            <p>+3.00 USD</p>
-                            <p class="item-date">2026-02-14 11:49</p>
-                        </div>
-                    </div>
+                    <div class="progress-ring-mini">30%</div>
+                </div>
+            </section>
+
+            <section class="asset-preview">
+                <div class="section-header">
+                    <h2>Top Assets</h2>
+                    <span class="see-all" onclick="showView('wealth')">See All</span>
+                </div>
+                <div id="asset-list-preview" class="compact-list">
+                    <!-- Dynamic Assets -->
                 </div>
             </section>
         </main>
 
-        <!-- Wallet View -->
-        <main id="wallet-view" class="view">
-            <header class="wallet-header">
-                <div class="header-top">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar">
-                    <div class="search-bar">
-                        <i data-lucide="search"></i>
-                        <input type="text" placeholder="Search assets...">
-                        <i data-lucide="maximize"></i>
-                    </div>
-                    <i data-lucide="globe" class="globe-icon"></i>
-                </div>
-                
-                <div class="total-balance">
-                    <div class="wallet-dropdown">
-                        <span>My Wallet (48EF)</span>
-                        <i data-lucide="chevron-down"></i>
-                        <i data-lucide="copy" class="copy-icon"></i>
-                    </div>
-                    <div class="balance-display">
-                        <span class="currency">$</span>
-                        <span class="amount">12</span>
-                        <span class="decimal">.22</span>
-                    </div>
-                    <div class="balance-change positive">
-                        +$0.01 (+0.04%) Today
-                    </div>
-                </div>
-
-                <div class="wallet-actions">
-                    <button class="wallet-action-btn">
-                        <i data-lucide="send"></i>
-                        <span>Transfer</span>
-                    </button>
-                    <button class="wallet-action-btn">
-                        <i data-lucide="arrow-down-to-dot"></i>
-                        <span>Receive</span>
-                    </button>
-                    <button class="wallet-action-btn">
-                        <i data-lucide="history"></i>
-                        <span>History</span>
-                    </button>
-                    <button class="wallet-action-btn more">
-                        <i data-lucide="more-horizontal"></i>
-                    </button>
+        <!-- 2. GYM TRACKER VIEW -->
+        <main id="gym-view" class="view">
+            <header class="section-top-header">
+                <i data-lucide="arrow-left" onclick="showView('home')"></i>
+                <h1>Gym Record</h1>
+                <div class="header-actions">
+                    <button class="add-btn" onclick="openModal('gym')"><i data-lucide="plus"></i></button>
                 </div>
             </header>
 
-            <section class="asset-cards">
-                <div class="scroll-container">
-                    <div class="asset-card card-gas">
-                        <div class="asset-icon"><i data-lucide="fuel"></i></div>
-                        <p class="asset-name">GetGas</p>
-                        <p class="asset-value">$4.96</p>
-                    </div>
-                    <div class="asset-card card-earn">
-                        <div class="asset-icon"><i data-lucide="piggy-bank"></i></div>
-                        <p class="asset-name">Earn</p>
-                        <p class="asset-value">$1.96</p>
-                    </div>
-                    <div class="asset-card card-bank">
-                        <div class="asset-icon"><i data-lucide="credit-card"></i></div>
-                        <p class="asset-name">Bank Card</p>
-                        <p class="asset-value">$1.11</p>
-                    </div>
+            <div class="stats-overview">
+                <div class="stat-item">
+                    <span class="stat-val">12</span>
+                    <span class="stat-label">Workouts</span>
                 </div>
-            </section>
+                <div class="stat-item">
+                    <span class="stat-val">4.5k</span>
+                    <span class="stat-label">kg Lifted</span>
+                </div>
+            </div>
 
-            <section class="token-list-section">
-                <div class="token-header">
-                    <span>Tokens $4.18</span>
-                    <i data-lucide="sliders-horizontal"></i>
+            <section class="workout-log">
+                <div class="date-filter">
+                    <span class="active">All</span>
+                    <span>Chest</span>
+                    <span>Legs</span>
+                    <span>Back</span>
                 </div>
-                <div class="token-list">
-                    <div class="token-item">
-                        <div class="token-main">
-                            <div class="token-icon usdc">S</div>
-                            <div class="token-info">
-                                <p class="token-name">USDC</p>
-                                <p class="token-price">$1 <span class="negative">-0.01%</span></p>
-                            </div>
-                        </div>
-                        <div class="token-balance">
-                            <p class="balance-raw">2.7606</p>
-                            <p class="balance-val">$2.76</p>
-                        </div>
-                    </div>
-                    <div class="promo-item">
-                        <span>Get 10% APR yields now</span>
-                        <i data-lucide="chevron-right"></i>
-                    </div>
-                    <div class="token-item">
-                        <div class="token-main">
-                            <div class="token-icon sol">S</div>
-                            <div class="token-info">
-                                <p class="token-name">SOL</p>
-                                <p class="token-price">$85.13 <span class="positive">+1.10%</span></p>
-                            </div>
-                        </div>
-                        <div class="token-balance">
-                            <p class="balance-raw">0.0116</p>
-                            <p class="balance-val">$0.99</p>
-                        </div>
-                    </div>
+                <div id="gym-records-list" class="log-container">
+                    <!-- Dynamic Gym Records -->
                 </div>
             </section>
         </main>
 
-        <!-- Navigation Bar -->
+        <!-- 3. WEALTH / CALCULATOR VIEW -->
+        <main id="wealth-view" class="view">
+            <header class="section-top-header">
+                <i data-lucide="arrow-left" onclick="showView('home')"></i>
+                <h1>Wealth & Stocks</h1>
+                <div class="header-actions">
+                    <button class="add-btn" onclick="openModal('asset')"><i data-lucide="plus"></i></button>
+                </div>
+            </header>
+
+            <section class="calculator-section">
+                <div class="balance-card dark">
+                    <div class="balance-info">
+                        <h3>Current Balance</h3>
+                        <h2 id="total-balance-wealth">$0.00</h2>
+                    </div>
+                    <div class="asset-toggle">
+                        <button class="toggle-btn active">Cash</button>
+                        <button class="toggle-btn">Stocks</button>
+                    </div>
+                </div>
+
+                <div id="assets-full-list" class="full-list scrollable">
+                    <!-- Dynamic Assets -->
+                </div>
+            </section>
+        </main>
+
+        <!-- 4. GOALS VIEW -->
+        <main id="goals-view" class="view">
+            <header class="section-top-header">
+                <i data-lucide="arrow-left" onclick="showView('home')"></i>
+                <h1>My Goals</h1>
+                <div class="header-actions">
+                    <button class="add-btn" onclick="openModal('goal')"><i data-lucide="plus"></i></button>
+                </div>
+            </header>
+
+            <section class="goals-container">
+                <div id="goals-list" class="goals-list">
+                    <!-- Dynamic Goals -->
+                </div>
+            </section>
+        </main>
+
+        <!-- MODAL FOR ADDING ITEMS -->
+        <div id="action-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Add Data</h2>
+                    <i data-lucide="x" onclick="closeModal()"></i>
+                </div>
+                <div class="modal-body">
+                    <div id="gym-form" class="form-container hidden">
+                        <input type="text" id="gym-exercise" placeholder="Exercise (e.g. Bench Press)">
+                        <div class="input-row">
+                            <input type="number" id="gym-weight" placeholder="Weight (kg)">
+                            <input type="number" id="gym-reps" placeholder="Reps">
+                        </div>
+                        <button class="submit-btn" onclick="saveGymRecord()">Save Workout</button>
+                    </div>
+                    <div id="asset-form" class="form-container hidden">
+                        <input type="text" id="asset-name" placeholder="Name (e.g. Maybank, TSLA)">
+                        <select id="asset-type">
+                            <option value="bank">Bank/Cash</option>
+                            <option value="stock">Stock</option>
+                        </select>
+                        <input type="number" id="asset-value" placeholder="Amount / Quantity">
+                        <input type="number" id="asset-price" placeholder="Price (if Stock)">
+                        <button class="submit-btn" onclick="saveAsset()">Add Asset</button>
+                    </div>
+                    <div id="goal-form" class="form-container hidden">
+                        <input type="text" id="goal-name" placeholder="Goal (e.g. Buy Car, 100kg Bench)">
+                        <input type="number" id="goal-target" placeholder="Target Value">
+                        <input type="number" id="goal-current" placeholder="Current Progress">
+                        <button class="submit-btn" onclick="saveGoal()">Create Goal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
         <nav class="bottom-nav">
-            <div class="nav-item active" data-view="home">
+            <div class="nav-item active" onclick="showView('home')">
                 <i data-lucide="home"></i>
                 <span>Home</span>
             </div>
-            <div class="nav-item" data-view="market">
-                <i data-lucide="trending-up"></i>
-                <span>Market</span>
+            <div class="nav-item" onclick="showView('gym')">
+                <i data-lucide="dumbbell"></i>
+                <span>Gym</span>
             </div>
             <div class="nav-center">
-                <div class="swap-btn">
-                    <i data-lucide="repeat"></i>
+                <div class="swap-btn" onclick="openActionMenu()">
+                    <i data-lucide="plus"></i>
                 </div>
             </div>
-            <div class="nav-item" data-view="pay">
-                <i data-lucide="dollar-sign"></i>
-                <span>Pay</span>
+            <div class="nav-item" onclick="showView('wealth')">
+                <i data-lucide="calculator"></i>
+                <span>Wealth</span>
             </div>
-            <div class="nav-item" data-view="wallet">
-                <i data-lucide="wallet"></i>
-                <span>Wallet</span>
+            <div class="nav-item" onclick="showView('goals')">
+                <i data-lucide="target"></i>
+                <span>Goals</span>
             </div>
         </nav>
     </div>
 
     <script src="script.js"></script>
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
     </script>
 </body>
+
 </html>
