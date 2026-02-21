@@ -38,8 +38,10 @@ function showView(viewId) {
 
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
-        // Match viewId in onclick attribute
-        if (item.getAttribute('onclick')?.includes(`'${viewId}'`)) item.classList.add('active');
+        const onclickAttr = item.getAttribute('onclick');
+        if (onclickAttr && onclickAttr.includes(`'${viewId}'`)) {
+            item.classList.add('active');
+        }
     });
 
     if (viewId === 'wealth' || (viewId === 'home' && document.getElementById('assetAllocationChart'))) {
@@ -95,12 +97,12 @@ function renderAll() {
             const logo = a.type === 'crypto' ? `https://cryptologos.cc/logos/${a.name.toLowerCase().replace(' ', '-')}-${a.symbol.toLowerCase()}-logo.png` : `https://logo.clearbit.com/${a.name.toLowerCase().replace(' ', '')}.com`;
 
             return `
-                <div class="asset-card">
+                    <div class="asset-card">
                     <div class="a-left">
                         <img src="${logo}" class="a-img" onerror="this.src='https://ui-avatars.com/api/?name=${a.symbol}&background=random'">
                         <div>
                             <p class="a-name">${a.symbol}</p>
-                            <p class="a-type">${a.name} (${a.currency})</p>
+                            <p class="a-type">${a.name}</p>
                         </div>
                     </div>
                     <div class="a-right">
