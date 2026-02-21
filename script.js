@@ -179,10 +179,16 @@ function updateAllocChart() {
 
 // --- MODAL & SAVE ---
 function openModal(type) {
+    document.getElementById('action-modal').style.display = 'flex';
     document.getElementById('action-modal').classList.add('active');
     document.querySelectorAll('.form-section').forEach(f => f.classList.add('hidden'));
-    document.getElementById(`form-${type === 'task' ? 'gym' : type}`).classList.remove('hidden');
-    document.getElementById('modal-title').textContent = type === 'asset' ? "New Transaction" : "New Record";
+
+    // Support mapping 'task' to gym form or add a task form
+    const formId = type === 'task' ? 'form-gym' : `form-${type}`;
+    const formEl = document.getElementById(formId);
+    if (formEl) formEl.classList.remove('hidden');
+
+    document.getElementById('modal-title').textContent = type === 'asset' ? "Execute Order" : "Growth Log";
     if (state.menuOpen) toggleMenu();
 }
 

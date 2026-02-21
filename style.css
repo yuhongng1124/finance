@@ -453,6 +453,43 @@ body {
     font-size: 14px;
 }
 
+/* --- TASKS --- */
+.task-item {
+    background: #f8f8fa;
+    padding: 14px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: var(--transition);
+}
+
+.task-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e5ea;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-item.done {
+    opacity: 0.5;
+}
+
+.task-item.done .task-checkbox {
+    background: var(--ios-blue);
+    border-color: var(--ios-blue);
+    color: white;
+}
+
+.task-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1c1c1e;
+}
+
 /* --- NAV BAR --- */
 .ios-nav {
     position: fixed;

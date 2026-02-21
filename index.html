@@ -22,25 +22,54 @@
             <main id="home-view" class="view active">
                 <header class="ios-header-glass">
                     <div class="header-top">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar"
-                            style="width: 35px; height: 35px; border-radius: 50%;">
+                        <div class="user-info" style="display: flex; align-items: center; gap: 12px;">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile"
+                                class="avatar"
+                                style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ios-blue);">
+                            <div class="xp-stack">
+                                <span
+                                    style="font-size: 10px; font-weight: 800; color: var(--ios-blue); letter-spacing: 1px;">LEVEL
+                                    12 ARCHON</span>
+                                <div
+                                    style="height: 4px; width: 80px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: 65%; background: var(--ios-blue);"></div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="search-bar-glass">
                             <i data-lucide="search" style="width: 14px;"></i>
                             <span>Search...</span>
                         </div>
-                        <i data-lucide="globe" style="width: 22px; color: white;"></i>
+                        <div class="streak-badge"
+                            style="background: rgba(255, 59, 48, 0.15); color: var(--ios-red); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="flame" style="width: 14px;"></i>
+                            <span>7</span>
+                        </div>
                     </div>
 
                     <div class="main-balance">
-                        <p style="opacity: 0.7; font-weight: 600;">My Balance (48EF) <i data-lucide="chevron-down"
-                                style="width: 14px;"></i></p>
-                        <h1 id="home-net-worth">$12.22</h1>
+                        <p style="opacity: 0.7; font-weight: 600; font-size: 13px;">Total Net Worth <i
+                                data-lucide="chevron-down" style="width: 12px;"></i></p>
+                        <h1 id="home-net-worth">$0.00</h1>
                         <div class="balance-sub">
                             <i data-lucide="trending-up" style="width: 14px;"></i>
-                            <span>+$0.01 (+0.04%) Today</span>
+                            <span>Target: $1.0M Vision</span>
                         </div>
                     </div>
                 </header>
+
+                <section class="glass-panel" style="margin-top: 5px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="font-size: 15px; font-weight: 700;">Daily Missions</h3>
+                        <span id="task-count"
+                            style="font-size: 12px; font-weight: 700; color: var(--ios-blue);">0/3</span>
+                    </div>
+                    <div id="tasks-list" class="tasks-container"
+                        style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Tasks -->
+                    </div>
+                </section>
 
                 <div class="quick-actions-row">
                     <div class="action-btn">
@@ -62,10 +91,39 @@
                 </div>
 
                 <div class="glass-panel">
+                    <div class="allocation-section" style="padding: 0; background: transparent; margin: 0 0 20px 0;">
+                        <div class="chart-box" style="width: 80px; height: 80px;">
+                            <canvas id="assetAllocationChart"></canvas>
+                        </div>
+                        <div class="allocation-stats" style="flex: 1; padding-left: 15px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div class="stat-mini">
+                                    <span class="label"
+                                        style="font-size: 9px; opacity: 0.6; font-weight: 800; text-transform: uppercase;">Portfolio
+                                        ROI</span>
+                                    <span class="val positive"
+                                        style="font-size: 16px; font-weight: 800; color: var(--ios-green);">+18.4%</span>
+                                </div>
+                                <div class="stat-mini">
+                                    <span class="label"
+                                        style="font-size: 9px; opacity: 0.6; font-weight: 800; text-transform: uppercase;">DCA
+                                        Strength</span>
+                                    <span class="val"
+                                        style="font-size: 16px; font-weight: 800; color: black;">Strong</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3 style="font-size: 16px;">Assets</h3>
-                        <i data-lucide="sliders" style="width: 18px;"></i>
+                        <h3 style="font-size: 15px; font-weight: 700;">Asset Empire</h3>
+                        <div class="asset-tabs" style="padding: 0; background: transparent;">
+                            <button class="active" onclick="filterAssets('all')"
+                                style="padding: 5px 12px; font-size: 11px;">All</button>
+                            <button onclick="filterAssets('stock')"
+                                style="padding: 5px 12px; font-size: 11px;">Stock</button>
+                        </div>
                     </div>
                     <div id="wealth-assets-list" class="assets-stack">
                         <!-- Assets injected -->
@@ -122,16 +180,36 @@
             <div class="nav-item" onclick="showView('gym')">
                 <i data-lucide="layout-grid"></i>
             </div>
-            <div class="center-btn" onclick="openModal('asset')">
-                <i data-lucide="arrow-right-left" style="color: white; transform: rotate(90deg);"></i>
+            <div class="center-btn" onclick="toggleMenu()">
+                <i data-lucide="plus" id="plus-icon" style="color: white; transition: 0.3s;"></i>
             </div>
             <div class="nav-item" onclick="showView('progress')">
                 <i data-lucide="credit-card"></i>
             </div>
-            <div class="nav-item" onclick="showView('home')">
-                <i data-lucide="briefcase"></i>
+            <div class="nav-item" onclick="showView('progress')">
+                <i data-lucide="compass"></i>
             </div>
         </nav>
+
+        <!-- FLOATING MENU -->
+        <div id="floating-menu" class="menu-overlay">
+            <div class="menu-items">
+                <button class="menu-item" onclick="openModal('asset')">
+                    <div class="m-icon" style="background: rgba(0, 194, 255, 0.1);"><i data-lucide="trending-up"></i>
+                    </div>
+                    <span>Invest / Spend</span>
+                </button>
+                <button class="menu-item" onclick="openModal('gym')">
+                    <div class="m-icon" style="background: rgba(52, 199, 89, 0.1);"><i data-lucide="dumbbell"></i></div>
+                    <span>Gym Session</span>
+                </button>
+                <button class="menu-item" onclick="openModal('task')">
+                    <div class="m-icon" style="background: rgba(255, 59, 48, 0.1);"><i data-lucide="check-circle"></i>
+                    </div>
+                    <span>Daily Mission</span>
+                </button>
+            </div>
+        </div>
 
         <!-- SHARED MODAL -->
         <div id="action-modal" class="modal-overlay">
