@@ -1,16 +1,16 @@
 :root {
-    --ios-blue: #0A84FF;
-    --ios-red: #FF453A;
-    --ios-green: #32D74B;
-    --ios-bg: #000000;
-    --ios-card: #1C1C1E;
-    --ios-card-sec: #2C2C2E;
-    --ios-text: #FFFFFF;
-    --ios-text-sec: #8E8E93;
-    --ios-blur: rgba(28, 28, 30, 0.85);
-    --gold: #FFD60A;
-    --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    --transition: all 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
+    --ios-blue: #00C2FF;
+    /* Bitget-style cyan/blue */
+    --ios-red: #FF3B30;
+    --ios-green: #34C759;
+    --ios-bg: #f2f2f7;
+    --ios-card: rgba(255, 255, 255, 0.85);
+    --ios-card-sec: rgba(255, 255, 255, 0.95);
+    --ios-text: #000000;
+    --ios-text-sec: #8e8e93;
+    --glass-blur: blur(20px);
+    --ios-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 * {
@@ -22,7 +22,7 @@
 
 body {
     font-family: 'Outfit', sans-serif;
-    background-color: #000;
+    background: linear-gradient(180deg, #A41F1F 0%, #000000 40%, #1a1a1a 100%);
     color: var(--ios-text);
     margin: 0;
     padding: 0;
@@ -36,113 +36,112 @@ body {
 .app-container {
     width: 100%;
     max-width: 390px;
-    /* iPhone 13/14/15 size */
     height: 844px;
-    /* iPhone height */
-    max-height: 95vh;
-    background: var(--ios-bg);
+    max-height: 98vh;
+    background: transparent;
     position: relative;
     display: flex;
     flex-direction: column;
-    border-radius: 44px;
-    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
-    border: 8px solid #1c1c1e;
+    border-radius: 40px;
     overflow: hidden;
+    /* Device effect */
+    border: 6px solid #1c1c1e;
+    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5);
 }
 
 .view-scroll-area {
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 100px;
+    padding-bottom: 120px;
     scrollbar-width: none;
+    background: transparent;
 }
 
 .view-scroll-area::-webkit-scrollbar {
     display: none;
 }
 
-/* --- HEADERS --- */
-.ios-header-vibrant {
-    background: linear-gradient(135deg, #0A0A0B 0%, #1C1C1E 100%);
-    padding: 50px 25px 40px;
-    border-bottom: 1px solid #333;
+/* --- GLASS HEADER --- */
+.ios-header-glass {
+    padding: 50px 20px 30px;
+    color: white;
 }
 
-.user-info {
+.header-top {
     display: flex;
     align-items: center;
-    gap: 15px;
+    justify-content: space-between;
+    margin-bottom: 25px;
 }
 
-.avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    border: 1.5px solid var(--ios-blue);
-}
-
-.rank {
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--ios-blue);
-    letter-spacing: 1px;
-}
-
-.xp-stack {
-    flex: 1;
-}
-
-.xp-bar {
-    height: 4px;
-    background: #333;
-    border-radius: 2px;
-    margin-top: 5px;
-    overflow: hidden;
-}
-
-.xp-progress {
-    height: 100%;
-    background: var(--ios-blue);
-    border-radius: 2px;
-    transition: width 1s ease;
-}
-
-.streak-badge {
-    background: rgba(255, 69, 58, 0.1);
-    color: var(--ios-red);
-    padding: 6px 14px;
+.search-bar-glass {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 8px 15px;
     border-radius: 20px;
+    flex: 1;
+    margin: 0 15px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-weight: 800;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.6);
     font-size: 14px;
 }
 
-.net-worth-card {
-    text-align: center;
-    margin-top: 30px;
+.main-balance {
+    margin-top: 10px;
 }
 
-.net-worth-card h1 {
-    font-size: 44px;
+.main-balance h1 {
+    font-size: 48px;
     font-weight: 800;
-    margin: 5px 0 15px;
-    background: linear-gradient(to bottom, #fff, #888);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
-.target-chip {
-    display: inline-flex;
+.balance-sub {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    background: #2c2c2e;
-    padding: 6px 16px;
-    border-radius: 20px;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ios-green);
+    margin-top: 5px;
+}
+
+/* --- GLASS CARDS --- */
+.glass-panel {
+    background: var(--ios-card);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 28px;
+    margin: 15px;
+    padding: 20px;
+    box-shadow: var(--ios-shadow);
+}
+
+.quick-actions-row {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 10px 20px;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: white;
     font-size: 12px;
     font-weight: 700;
-    color: var(--ios-text-sec);
+}
+
+.action-icon-circle {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* --- GYM & PR WALL --- */

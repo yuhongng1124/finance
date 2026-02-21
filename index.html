@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mastery - Soul, Health, Wealth</title>
+    <title>Bitget Wallet - Glass UI</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,224 +14,144 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="dark-theme">
+<body>
     <div class="app-container">
 
         <div class="view-scroll-area">
-            <!-- 1. HOME VIEW (DAILY MISSIONS & XP) -->
+            <!-- 1. HOME VIEW (WALLET CONTENT) -->
             <main id="home-view" class="view active">
-                <header class="ios-header-vibrant">
+                <header class="ios-header-glass">
                     <div class="header-top">
-                        <div class="user-info">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile"
-                                class="avatar">
-                            <div class="xp-stack">
-                                <span class="rank">LEVEL 12 ARCHON</span>
-                                <div class="xp-bar">
-                                    <div class="xp-progress" style="width: 65%;"></div>
-                                </div>
-                            </div>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar"
+                            style="width: 35px; height: 35px; border-radius: 50%;">
+                        <div class="search-bar-glass">
+                            <i data-lucide="search" style="width: 14px;"></i>
+                            <span>Search...</span>
                         </div>
-                        <div class="streak-badge">
-                            <i data-lucide="flame"></i>
-                            <span id="streak-days">7</span>
-                        </div>
+                        <i data-lucide="globe" style="width: 22px; color: white;"></i>
                     </div>
-                    <div class="net-worth-card">
-                        <p>Total Net Worth</p>
-                        <h1 id="home-net-worth">$0.00</h1>
-                        <div class="target-chip">
-                            <i data-lucide="crosshair"></i>
-                            <span>1.0M Goal</span>
+
+                    <div class="main-balance">
+                        <p style="opacity: 0.7; font-weight: 600;">My Balance (48EF) <i data-lucide="chevron-down"
+                                style="width: 14px;"></i></p>
+                        <h1 id="home-net-worth">$12.22</h1>
+                        <div class="balance-sub">
+                            <i data-lucide="trending-up" style="width: 14px;"></i>
+                            <span>+$0.01 (+0.04%) Today</span>
                         </div>
                     </div>
                 </header>
 
-                <section class="daily-tasks-section">
-                    <div class="section-title">
-                        <h3>Daily Self-Discipline</h3>
-                        <span id="task-count">0/3</span>
+                <div class="quick-actions-row">
+                    <div class="action-btn">
+                        <div class="action-icon-circle"><i data-lucide="arrow-right-left"></i></div>
+                        <span>Transfer</span>
                     </div>
-                    <div id="tasks-list" class="tasks-container">
-                        <!-- Tasks injected -->
+                    <div class="action-btn">
+                        <div class="action-icon-circle"><i data-lucide="download"></i></div>
+                        <span>Receive</span>
                     </div>
-                </section>
+                    <div class="action-btn">
+                        <div class="action-icon-circle"><i data-lucide="history"></i></div>
+                        <span>History</span>
+                    </div>
+                    <div class="action-btn">
+                        <div class="action-icon-circle"><i data-lucide="more-horizontal"></i></div>
+                        <span>More</span>
+                    </div>
+                </div>
+
+                <div class="glass-panel">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 16px;">Assets</h3>
+                        <i data-lucide="sliders" style="width: 18px;"></i>
+                    </div>
+                    <div id="wealth-assets-list" class="assets-stack">
+                        <!-- Assets injected -->
+                    </div>
+                </div>
             </main>
 
-            <!-- 2. GYM VIEW (LOGS & PR WALL) -->
+            <!-- 2. GYM VIEW (GLASS STYLE) -->
             <main id="gym-view" class="view">
-                <header class="ios-header-transparent">
-                    <i data-lucide="chevron-left" class="back-icon" onclick="showView('home')"></i>
-                    <h1>Growth Engine</h1>
-                    <div class="header-right"></div>
-                </header>
-
-                <div class="pr-wall">
-                    <div class="pr-card">
-                        <span class="label">Bench</span>
-                        <span class="val" id="pr-bench">100kg</span>
-                    </div>
-                    <div class="pr-card">
-                        <span class="label">Deadlift</span>
-                        <span class="val" id="pr-dead">140kg</span>
-                    </div>
-                    <div class="pr-card">
-                        <span class="label">Squat</span>
-                        <span class="val" id="pr-squat">120kg</span>
-                    </div>
-                </div>
-
-                <div class="calendar-card dark">
-                    <div id="calendar-days" class="calendar-grid">
-                        <!-- Calendar days -->
-                    </div>
-                </div>
-
-                <section class="records-section">
-                    <div class="section-title">
-                        <h3>Activity History</h3>
-                    </div>
-                    <div id="gym-records-list" class="activity-list"></div>
-                </section>
-            </main>
-
-            <!-- 3. WEALTH VIEW (ASSETS & ALLOCATION) -->
-            <main id="wealth-view" class="view">
-                <header class="ios-header-transparent">
-                    <h1>Empire</h1>
-                    <div class="header-right"></div>
-                </header>
-
-                <div class="allocation-section">
-                    <div class="chart-box">
-                        <canvas id="assetAllocationChart"></canvas>
-                    </div>
-                    <div class="allocation-stats">
-                        <div class="stat-mini"><span class="label">DCA AVG</span><span id="dca-cost">$4.2k</span></div>
-                        <div class="stat-mini"><span class="label">ROI</span><span class="val positive">+18%</span>
+                <header class="ios-header-glass">
+                    <h1>Gym Tracker</h1>
+                    <div class="pr-wall" style="display: flex; gap: 10px; margin-top: 15px;">
+                        <div class="action-btn"
+                            style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 15px; flex: 1;">
+                            <span style="font-size: 10px;">BENCH</span>
+                            <strong id="pr-bench">100kg</strong>
+                        </div>
+                        <div class="action-btn"
+                            style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 15px; flex: 1;">
+                            <span style="font-size: 10px;">DEADLIFT</span>
+                            <strong id="pr-dead">140kg</strong>
                         </div>
                     </div>
+                </header>
+                <div class="glass-panel" style="background: rgba(255,255,255,0.9);">
+                    <div id="calendar-days" class="calendar-grid"></div>
                 </div>
-
-                <div class="asset-tabs">
-                    <button class="active" onclick="filterAssets('all')">All</button>
-                    <button onclick="filterAssets('stock')">Stocks</button>
-                    <button onclick="filterAssets('crypto')">Crypto</button>
-                    <button onclick="filterAssets('bank')">Bank</button>
-                </div>
-
-                <section class="assets-scroll">
-                    <div id="wealth-assets-list" class="assets-stack"></div>
-                </section>
             </main>
 
-            <!-- 4. SOUL VIEW (TIME & WISDOM) -->
+            <!-- 3. PROGRESS VIEW (GLASS STYLE) -->
             <main id="progress-view" class="view">
-                <header class="ios-header-transparent">
+                <header class="ios-header-glass">
                     <h1>Prophecy</h1>
-                    <div class="header-right"></div>
                 </header>
-
-                <section class="goal-countdown">
-                    <div class="countdown-radial">
-                        <div class="inner-circle">
-                            <p>ETA to $1M</p>
-                            <h2 id="time-prediction">5.4</h2>
-                            <span>YEARS</span>
-                        </div>
-                    </div>
-                    <div class="velocity-info">
-                        <p>Current Savings Velocity</p>
-                        <h4>$2,450 / month</h4>
-                    </div>
-                </section>
-
-                <section class="soul-wisdom">
-                    <div class="motto-card">
-                        <i data-lucide="quote"></i>
-                        <p>"The best time to plant a tree was 20 years ago. The second best time is now."</p>
-                    </div>
-
-                    <div class="opportunity-cost-card">
-                        <div class="oc-header">
-                            <i data-lucide="alert-triangle"></i>
-                            <span>Impulse Training</span>
-                        </div>
-                        <div class="oc-body">
-                            <p>Total unnecessary spend: <strong id="junk-total">$120</strong></p>
-                            <p class="oc-future">Future value in BTC @ 5 yrs: <span id="future-btc">$840</span></p>
-                        </div>
-                    </div>
-                </section>
+                <div class="glass-panel" style="text-align: center;">
+                    <p style="color: grey; font-size: 12px; font-weight: 700;">ETA TO $1.0M</p>
+                    <h2 id="time-prediction" style="font-size: 48px; color: var(--ios-blue);">5.4</h2>
+                    <p style="color: grey; font-size: 12px;">YEARS</p>
+                </div>
+                <div class="glass-panel"
+                    style="background: rgba(255,255,255,0.15); border: 1px dashed rgba(255,255,255,0.3); color: white;">
+                    <p>Total Impulse Spend: <strong id="junk-total">$120</strong></p>
+                    <p style="color: var(--ios-green); font-weight: 700;">Potential @ 5yr: <span
+                            id="future-btc">$840</span></p>
+                </div>
             </main>
         </div>
 
-        <!-- FLOATING ACTION MENU -->
-        <div id="floating-menu" class="menu-overlay">
-            <div class="menu-items">
-                <button class="menu-item" onclick="openModal('asset')">
-                    <div class="m-icon"><i data-lucide="landmark"></i></div>
-                    <span>Invest / Spend</span>
-                </button>
-                <button class="menu-item" onclick="openModal('gym')">
-                    <div class="m-icon"><i data-lucide="dumbbell"></i></div>
-                    <span>Gym Session</span>
-                </button>
-                <button class="menu-item" onclick="openModal('task')">
-                    <div class="m-icon"><i data-lucide="check-square"></i></div>
-                    <span>Add Mission</span>
-                </button>
+        <!-- NAV BAR GLASS -->
+        <nav class="ios-nav glass">
+            <div class="nav-item active" onclick="showView('home')">
+                <i data-lucide="wallet"></i>
             </div>
-        </div>
+            <div class="nav-item" onclick="showView('gym')">
+                <i data-lucide="layout-grid"></i>
+            </div>
+            <div class="center-btn" onclick="openModal('asset')">
+                <i data-lucide="arrow-right-left" style="color: white; transform: rotate(90deg);"></i>
+            </div>
+            <div class="nav-item" onclick="showView('progress')">
+                <i data-lucide="credit-card"></i>
+            </div>
+            <div class="nav-item" onclick="showView('home')">
+                <i data-lucide="briefcase"></i>
+            </div>
+        </nav>
 
-        <!-- SHARED MODAL (iOS Style) -->
+        <!-- SHARED MODAL -->
         <div id="action-modal" class="modal-overlay">
-            <div class="modal-content dark">
-                <div class="modal-header">
+            <div class="modal-content dark" style="background: white;">
+                <div class="modal-header"
+                    style="display: flex; justify-content: space-between; align-items: center; color: black; margin-bottom: 20px;">
                     <h2 id="modal-title">New Entry</h2>
                     <i data-lucide="x" onclick="closeModal()"></i>
                 </div>
                 <div class="modal-body">
-                    <div id="form-gym" class="form-section hidden">
-                        <input type="text" id="gym-name" placeholder="Workout/PR">
-                        <input type="number" id="gym-weight" placeholder="Weight (kg)">
-                        <button class="save-btn" onclick="saveGym()">Log Growth</button>
-                    </div>
-                    <div id="form-asset" class="form-section hidden">
-                        <input type="text" id="asset-name" placeholder="Asset Name">
-                        <select id="asset-type">
-                            <option value="bank">Bank/Expense</option>
-                            <option value="stock">US Stock</option>
-                            <option value="crypto">Crypto</option>
-                        </select>
-                        <input type="number" id="asset-value" placeholder="Amount">
-                        <input type="number" id="asset-price" placeholder="Price">
-                        <button class="save-btn" onclick="saveAsset()">Execute</button>
+                    <div id="form-asset" class="form-section">
+                        <input type="text" id="asset-name" placeholder="Asset Name"
+                            style="background: #f2f2f7; color: black; border: none;">
+                        <input type="number" id="asset-value" placeholder="Amount"
+                            style="background: #f2f2f7; color: black; border: none;">
+                        <button class="save-btn" onclick="saveAsset()" style="width: 100%;">Execute</button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- NAV BAR -->
-        <nav class="ios-nav glass">
-            <div class="nav-item active" onclick="showView('home')">
-                <i data-lucide="grid"></i>
-            </div>
-            <div class="nav-item" onclick="showView('gym')">
-                <i data-lucide="dumbbell"></i>
-            </div>
-            <div class="nav-extra">
-                <div class="center-btn" onclick="toggleMenu()">
-                    <i data-lucide="plus" id="plus-icon"></i>
-                </div>
-            </div>
-            <div class="nav-item" onclick="showView('wealth')">
-                <i data-lucide="bar-chart-3"></i>
-            </div>
-            <div class="nav-item" onclick="showView('progress')">
-                <i data-lucide="compass"></i>
-            </div>
-        </nav>
     </div>
 
     <script src="script.js"></script>
