@@ -453,6 +453,28 @@ body {
     font-size: 14px;
 }
 
+.negative {
+    color: var(--ios-red) !important;
+}
+
+#timer-display.active {
+    background: var(--ios-blue) !important;
+    color: white !important;
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
 /* --- TASKS --- */
 .task-item {
     background: #f8f8fa;

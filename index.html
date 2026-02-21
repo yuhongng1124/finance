@@ -27,12 +27,21 @@
                                 class="avatar"
                                 style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ios-blue);">
                             <div class="xp-stack">
-                                <span
-                                    style="font-size: 10px; font-weight: 800; color: var(--ios-blue); letter-spacing: 1px;">LEVEL
-                                    12 ARCHON</span>
-                                <div
-                                    style="height: 4px; width: 80px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden;">
-                                    <div style="height: 100%; width: 65%; background: var(--ios-blue);"></div>
+                                <span style="font-size: 10px; font-weight: 800; color: var(--ios-blue);">LVL 12
+                                    ARCHON</span>
+                                <div class="vitality-container" style="display: flex; gap: 2px; margin-top: 4px;">
+                                    <div
+                                        style="height: 3px; width: 12px; background: var(--ios-green); border-radius: 1px;">
+                                    </div>
+                                    <div
+                                        style="height: 3px; width: 12px; background: var(--ios-green); border-radius: 1px;">
+                                    </div>
+                                    <div
+                                        style="height: 3px; width: 12px; background: var(--ios-green); border-radius: 1px;">
+                                    </div>
+                                    <div
+                                        style="height: 3px; width: 12px; background: rgba(255,255,255,0.1); border-radius: 1px;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -40,10 +49,9 @@
                             <i data-lucide="search" style="width: 14px;"></i>
                             <span>Search...</span>
                         </div>
-                        <div class="streak-badge"
-                            style="background: rgba(255, 59, 48, 0.15); color: var(--ios-red); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+                        <div class="streak-badge">
                             <i data-lucide="flame" style="width: 14px;"></i>
-                            <span>7</span>
+                            <span id="streak-days">7</span>
                         </div>
                     </div>
 
@@ -135,15 +143,28 @@
             <main id="gym-view" class="view">
                 <header class="ios-header-glass">
                     <h1>Gym Tracker</h1>
-                    <div class="pr-wall" style="display: flex; gap: 10px; margin-top: 15px;">
+                    <div class="pr-wall"
+                        style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px;">
+                        <button id="timer-display" onclick="toggleTimer(60)" class="action-btn"
+                            style="background: rgba(0, 194, 255, 0.1); border: 1px solid var(--ios-blue); border-radius: 15px; padding: 12px; color: var(--ios-blue); font-weight: 800;">
+                            REST TIMER
+                        </button>
+                        <div class="action-btn"
+                            style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 15px;">
+                            <span style="font-size: 9px; opacity: 0.6;">VOL (LBS)</span>
+                            <strong id="training-volume">12,450</strong>
+                        </div>
+                    </div>
+
+                    <div class="pr-wall" style="display: flex; gap: 10px; margin-top: 10px;">
                         <div class="action-btn"
                             style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 15px; flex: 1;">
-                            <span style="font-size: 10px;">BENCH</span>
+                            <span style="font-size: 9px; opacity: 0.6;">BENCH</span>
                             <strong id="pr-bench">100kg</strong>
                         </div>
                         <div class="action-btn"
                             style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 15px; flex: 1;">
-                            <span style="font-size: 10px;">DEADLIFT</span>
+                            <span style="font-size: 9px; opacity: 0.6;">DEAD</span>
                             <strong id="pr-dead">140kg</strong>
                         </div>
                     </div>
@@ -158,10 +179,34 @@
                 <header class="ios-header-glass">
                     <h1>Prophecy</h1>
                 </header>
-                <div class="glass-panel" style="text-align: center;">
-                    <p style="color: grey; font-size: 12px; font-weight: 700;">ETA TO $1.0M</p>
-                    <h2 id="time-prediction" style="font-size: 48px; color: var(--ios-blue);">5.4</h2>
-                    <p style="color: grey; font-size: 12px;">YEARS</p>
+                <div class="glass-panel"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center;">
+                    <div>
+                        <p style="color: grey; font-size: 10px; font-weight: 800;">SURVIVAL RUNWAY</p>
+                        <h3 id="survival-runway" style="color: white; font-size: 20px;">120 Days</h3>
+                        <span id="survival-status"
+                            style="font-size: 10px; color: var(--ios-green); font-weight: 800;">SAFE</span>
+                    </div>
+                    <div>
+                        <p style="color: grey; font-size: 10px; font-weight: 800;">ETA TO $1.0M</p>
+                        <h3 id="time-prediction" style="color: var(--ios-blue); font-size: 20px;">5.4</h3>
+                        <span style="font-size: 10px; font-weight: 800; opacity: 0.5;">YEARS</span>
+                    </div>
+                </div>
+
+                <div class="glass-panel"
+                    style="background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                        <div
+                            style="width: 32px; height: 32px; background: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--ios-blue);">
+                            <i data-lucide="zap" style="width: 16px; color: var(--ios-blue);"></i>
+                        </div>
+                        <p style="font-size: 13px; font-weight: 700;">AI Coach Prophecy</p>
+                    </div>
+                    <p id="ai-coaching" style="font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.8);">
+                        "Skip the $5 latte today. Invest it in SPY. 10 years later, that $5 becomes <strong
+                            style="color: var(--ios-green);">$12.40</strong>. Every brick counts."
+                    </p>
                 </div>
                 <div class="glass-panel"
                     style="background: rgba(255,255,255,0.15); border: 1px dashed rgba(255,255,255,0.3); color: white;">

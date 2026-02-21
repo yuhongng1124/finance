@@ -1,27 +1,27 @@
-// --- REFINED STATE ---
 let state = {
+    settings: { baseCurrency: 'USD', myrRate: 4.78, monthlyBurn: 2200 },
+    stats: { vitality: 85, level: 12, xp: 650 },
     tasks: [
-        { id: 1, text: "Finish 5k Run / 50 Pushups", done: false, category: "Health" },
-        { id: 2, text: "DCA into SPY/BTC ($100)", done: true, category: "Wealth" },
-        { id: 3, text: "Read 10 pages / Meditate", done: false, category: "Soul" }
+        { id: 1, text: "Finish 5k Run / 50 Pushups", done: false, category: "Health", xp: 50 },
+        { id: 2, text: "DCA into SPY/BTC ($100)", done: true, category: "Wealth", xp: 100 },
+        { id: 3, text: "Read 10 pages / Meditate", done: false, category: "Soul", xp: 30 }
     ],
-    gymLogs: {
-        "2026-02-18": "done", "2026-02-19": "done",
-        "2026-02-20": "missed", "2026-02-21": "done"
-    },
+    gymLogs: { "2026-02-18": "done", "2026-02-19": "done", "2026-02-20": "missed", "2026-02-21": "done" },
+    gymVolume: [
+        { date: "Feb 15", vol: 2200 }, { date: "Feb 17", vol: 2450 }, { date: "Feb 19", vol: 2100 }, { date: "Feb 21", vol: 2800 }
+    ],
     prWall: { bench: 100, dead: 140, squat: 120 },
     assets: [
-        { id: 1, name: "S&P 500 (SPY)", type: "stock", value: 10, price: 505, cost: 480, img: "https://logo.clearbit.com/standardandpoors.com" },
-        { id: 2, name: "Bitcoin (BTC)", type: "crypto", value: 0.12, price: 52000, cost: 42000, img: "https://cryptologos.cc/logos/bitcoin-btc-logo.png" },
-        { id: 3, name: "Emergency Cash", type: "bank", value: 4500, price: 1, cost: 1, img: "https://logo.clearbit.com/maybank.com" }
+        { id: 1, symbol: "SPY", name: "S&P 500", type: "stock", value: 10, price: 505.2, cost: 480, currency: 'USD' },
+        { id: 2, symbol: "BTC", name: "Bitcoin", type: "crypto", value: 0.12, price: 51840, cost: 42000, currency: 'USD' },
+        { id: 3, symbol: "MYB", name: "Maybank", type: "bank", value: 4500, price: 1, cost: 1, currency: 'MYR' }
     ],
-    expenses: [
-        { id: 1, name: "Venti Latte", amount: 7, type: "junk", date: "2026-02-21" },
-        { id: 2, name: "Game Skin", amount: 15, type: "junk", date: "2026-02-20" }
-    ],
+    expenses: [{ id: 1, name: "Venti Latte", amount: 7, type: "junk", date: "2026-02-21" }],
     targetGoal: 1000000,
     allocationChart: null,
-    menuOpen: false
+    menuOpen: false,
+    timerActive: false,
+    timerSeconds: 0
 };
 
 // --- CORE APP LOGIC ---
@@ -70,26 +70,36 @@ function renderAll() {
     document.getElementById('pr-dead').textContent = `${state.prWall.dead}kg`;
     document.getElementById('pr-squat').textContent = `${state.prWall.squat}kg`;
 
-    // Wealth List
+    // Wealth List with Logo Automation & PnL
     const wealthList = document.getElementById('wealth-assets-list');
     wealthList.innerHTML = state.assets.map(a => {
-        const roi = (((a.price - a.cost) / a.cost) * 100).toFixed(1);
+        const valueUSD = a.currency === 'USD' ? (a.value * a.price) : (a.value * a.price / state.settings.myrRate);
+        const costUSD = a.currency === 'USD' ? (a.value * a.cost) : (a.value * a.cost / state.settings.myrRate);
+        const roi = (((valueUSD - costUSD) / costUSD) * 100).toFixed(1);
+        const logo = a.type === 'crypto' ? `https://cryptologos.cc/logos/${a.name.toLowerCase()}-${a.symbol.toLowerCase()}-logo.png` : `https://logo.clearbit.com/${a.name.toLowerCase().replace(' ', '')}.com`;
+
         return `
             <div class="asset-card">
                 <div class="a-left">
-                    <img src="${a.img}" class="a-img" onerror="this.src='https://via.placeholder.com/40'">
+                    <img src="${logo}" class="a-img" onerror="this.src='https://ui-avatars.com/api/?name=${a.symbol}&background=random'">
                     <div>
-                        <p class="a-name">${a.name}</p>
-                        <p class="a-type">DCA Avg: $${a.cost.toLocaleString()}</p>
+                        <p class="a-name">${a.symbol}</p>
+                        <p class="a-type">${a.name} (${a.currency})</p>
                     </div>
                 </div>
                 <div class="a-right">
-                    <p class="a-val">$${(a.value * a.price).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
-                    <p class="a-sub positive">${roi >= 0 ? '+' : ''}${roi}%</p>
+                    <p class="a-val">$${valueUSD.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                    <p class="a-sub ${roi >= 0 ? 'positive' : 'negative'}">${roi >= 0 ? '+' : ''}${roi}%</p>
                 </div>
             </div>
         `;
     }).join('');
+
+    // Archon Survival Logic
+    const emergencyCash = state.assets.filter(a => a.type === 'bank').reduce((sum, a) => sum + (a.currency === 'USD' ? a.value : a.value / state.settings.myrRate), 0);
+    const survivalDays = Math.round((emergencyCash / (state.settings.monthlyBurn / 30)));
+    document.getElementById('survival-runway').textContent = `${survivalDays} Days`;
+    document.getElementById('survival-status').textContent = survivalDays > 180 ? 'Fortress' : 'Warning';
 
     // Soul / Prophet Logic
     const remaining = state.targetGoal - total;
@@ -129,7 +139,31 @@ function toggleTask(id) {
 }
 
 function calculateNetWorth() {
-    return state.assets.reduce((sum, a) => sum + (a.value * a.price), 0);
+    return state.assets.reduce((sum, a) => {
+        const val = a.value * a.price;
+        return sum + (a.currency === 'USD' ? val : val / state.settings.myrRate);
+    }, 0);
+}
+
+// --- REST TIMER ---
+function toggleTimer(sec) {
+    if (state.timerActive) return;
+    state.timerActive = true;
+    state.timerSeconds = sec;
+    const btn = document.getElementById('timer-display');
+    btn.classList.add('active');
+
+    const interval = setInterval(() => {
+        state.timerSeconds--;
+        btn.textContent = `${state.timerSeconds}s`;
+        if (state.timerSeconds <= 0) {
+            clearInterval(interval);
+            state.timerActive = false;
+            btn.textContent = 'REST';
+            btn.classList.remove('active');
+            new Audio('https://assets.mixkit.net/sfx/preview/mixkit-simple-notification-alert-2630.mp3').play();
+        }
+    }, 1000);
 }
 
 // --- CALENDAR ---
