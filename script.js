@@ -1,33 +1,32 @@
-// --- STATE ---
+// --- REFINED STATE ---
 let state = {
     tasks: [
-        { id: 1, text: "Push 100kg Bench", done: false },
-        { id: 2, text: "Buy TSLA dip", done: true },
-        { id: 3, text: "Log daily earnings", done: false }
+        { id: 1, text: "Finish 5k Run / 50 Pushups", done: false, category: "Health" },
+        { id: 2, text: "DCA into SPY/BTC ($100)", done: true, category: "Wealth" },
+        { id: 3, text: "Read 10 pages / Meditate", done: false, category: "Soul" }
     ],
     gymLogs: {
-        "2026-02-18": "done",
-        "2026-02-19": "done",
-        "2026-02-20": "missed",
-        "2026-02-21": "done"
+        "2026-02-18": "done", "2026-02-19": "done",
+        "2026-02-20": "missed", "2026-02-21": "done"
     },
+    prWall: { bench: 100, dead: 140, squat: 120 },
     assets: [
-        { id: 1, name: "Tesla (TSLA)", type: "stock", value: 10, price: 850, img: "https://logo.clearbit.com/tesla.com" },
-        { id: 2, name: "Bitcoin", type: "crypto", value: 0.1, price: 52000, img: "https://cryptologos.cc/logos/bitcoin-btc-logo.png" },
-        { id: 3, name: "Maybank", type: "bank", value: 5000, price: 1, img: "https://logo.clearbit.com/maybank.com" }
+        { id: 1, name: "S&P 500 (SPY)", type: "stock", value: 10, price: 505, cost: 480, img: "https://logo.clearbit.com/standardandpoors.com" },
+        { id: 2, name: "Bitcoin (BTC)", type: "crypto", value: 0.12, price: 52000, cost: 42000, img: "https://cryptologos.cc/logos/bitcoin-btc-logo.png" },
+        { id: 3, name: "Emergency Cash", type: "bank", value: 4500, price: 1, cost: 1, img: "https://logo.clearbit.com/maybank.com" }
     ],
-    earnings: [
-        { date: "2026-02-21", amount: 150 },
-        { date: "2026-02-20", amount: -40 },
-        { date: "2026-02-19", amount: 200 }
+    expenses: [
+        { id: 1, name: "Venti Latte", amount: 7, type: "junk", date: "2026-02-21" },
+        { id: 2, name: "Game Skin", amount: 15, type: "junk", date: "2026-02-20" }
     ],
-    targetGoal: 1000000, // 1 Million USD
-    tempImage: null
+    targetGoal: 1000000,
+    allocationChart: null,
+    menuOpen: false
 };
 
-// --- INITIALIZE & VIEW CONTROL ---
+// --- CORE APP LOGIC ---
 document.addEventListener('DOMContentLoaded', () => {
-    initChart();
+    initAllocChart();
     renderAll();
     setupCalendar();
 });
@@ -38,129 +37,153 @@ function showView(viewId) {
 
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
-        if (item.getAttribute('onclick').includes(viewId)) item.classList.add('active');
+        if (item.getAttribute('onclick')?.includes(viewId)) item.classList.add('active');
     });
 
+    if (viewId === 'wealth') updateAllocChart();
     renderAll();
     lucide.createIcons();
+    if (state.menuOpen) toggleMenu(); // Close menu on view switch
 }
 
-// --- RENDERERS ---
+// --- RENDERING ---
 function renderAll() {
-    renderHome();
-    renderGym();
-    renderWealth();
-    renderProgress();
-}
+    const total = calculateNetWorth();
+    document.getElementById('home-net-worth').textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
 
-function renderHome() {
-    const total = calculateTotalNetWorth();
-    document.getElementById('home-net-worth').textContent = `$${total.toLocaleString()}`;
-
+    // Task List with Category badges
     const taskList = document.getElementById('tasks-list');
     taskList.innerHTML = state.tasks.map(task => `
         <div class="task-item ${task.done ? 'done' : ''}" onclick="toggleTask(${task.id})">
             <div class="task-checkbox">${task.done ? '<i data-lucide="check"></i>' : ''}</div>
-            <span class="task-text">${task.text}</span>
+            <div class="task-content">
+                <span class="task-text">${task.text}</span>
+            </div>
         </div>
     `).join('');
 
     const doneCount = state.tasks.filter(t => t.done).length;
     document.getElementById('task-count').textContent = `${doneCount}/${state.tasks.length}`;
-}
 
-function renderGym() {
-    setupCalendar();
-}
+    // PR Wall
+    document.getElementById('pr-bench').textContent = `${state.prWall.bench}kg`;
+    document.getElementById('pr-dead').textContent = `${state.prWall.dead}kg`;
+    document.getElementById('pr-squat').textContent = `${state.prWall.squat}kg`;
 
-function renderWealth() {
-    const list = document.getElementById('wealth-assets-list');
-    list.innerHTML = state.assets.map(a => `
-        <div class="asset-card">
-            <div class="a-left">
-                <img src="${a.img || 'https://via.placeholder.com/50'}" class="a-img" alt="">
-                <div>
-                    <p class="a-name">${a.name}</p>
-                    <p class="a-type">${a.type}</p>
+    // Wealth List
+    const wealthList = document.getElementById('wealth-assets-list');
+    wealthList.innerHTML = state.assets.map(a => {
+        const roi = (((a.price - a.cost) / a.cost) * 100).toFixed(1);
+        return `
+            <div class="asset-card">
+                <div class="a-left">
+                    <img src="${a.img}" class="a-img" onerror="this.src='https://via.placeholder.com/40'">
+                    <div>
+                        <p class="a-name">${a.name}</p>
+                        <p class="a-type">DCA Avg: $${a.cost.toLocaleString()}</p>
+                    </div>
+                </div>
+                <div class="a-right">
+                    <p class="a-val">$${(a.value * a.price).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                    <p class="a-sub positive">${roi >= 0 ? '+' : ''}${roi}%</p>
                 </div>
             </div>
-            <div class="a-right">
-                <p class="a-val">$${(a.value * a.price).toLocaleString()}</p>
-                <p class="a-sub">+0.00%</p>
-            </div>
-        </div>
-    `).join('');
-}
+        `;
+    }).join('');
 
-function renderProgress() {
-    const total = calculateTotalNetWorth();
-    const remaining = Math.max(0, state.targetGoal - total);
-    document.getElementById('milestone-remaining').textContent = `$${remaining.toLocaleString()} to go`;
-
-    const pct = Math.min(100, (total / state.targetGoal) * 100).toFixed(1);
-    document.getElementById('milestone-percent').textContent = `${pct}%`;
-
-    // Simple projection: if we save $10k a year...
-    const years = (remaining / 12000).toFixed(1);
+    // Soul / Prophet Logic
+    const remaining = state.targetGoal - total;
+    const years = (remaining / (2500 * 12)).toFixed(1); // Assuming 2.5k savings/mo
     document.getElementById('time-prediction').textContent = years;
 
-    const earnList = document.getElementById('earnings-list');
-    earnList.innerHTML = state.earnings.map(e => `
-        <div class="asset-card" style="padding: 12px 20px;">
-            <p style="font-weight:700;">${e.date}</p>
-            <p style="font-weight:800; color: ${e.amount >= 0 ? 'var(--ios-green)' : 'var(--ios-red)'}">
-                ${e.amount >= 0 ? '+' : ''}$${e.amount}
-            </p>
-        </div>
-    `).join('');
+    // Junk calculation
+    const junkTotal = state.expenses.filter(e => e.type === 'junk').reduce((sum, e) => sum + e.amount, 0);
+    document.getElementById('junk-total').textContent = `$${junkTotal}`;
+    // Future value logic: Junk * 1.1^5 (10% growth) * 5 (just a multiplier for dramatic effect)
+    document.getElementById('future-btc').textContent = `$${Math.round(junkTotal * 7.5)}`;
+
+    if (state.allocationChart) updateAllocChart();
 }
 
-// --- LOGIC HELPERS ---
-function calculateTotalNetWorth() {
-    return state.assets.reduce((sum, a) => sum + (a.value * a.price), 0);
+// --- INTERACTIVE ACTIONS ---
+function toggleMenu() {
+    state.menuOpen = !state.menuOpen;
+    const menu = document.getElementById('floating-menu');
+    const plus = document.getElementById('plus-icon');
+    const btn = document.querySelector('.center-btn');
+
+    if (state.menuOpen) {
+        menu.classList.add('active');
+        btn.classList.add('active');
+    } else {
+        menu.classList.remove('active');
+        btn.classList.remove('active');
+    }
 }
 
 function toggleTask(id) {
     const task = state.tasks.find(t => t.id === id);
     if (task) task.done = !task.done;
-    renderHome();
+    renderAll();
     lucide.createIcons();
 }
 
+function calculateNetWorth() {
+    return state.assets.reduce((sum, a) => sum + (a.value * a.price), 0);
+}
+
+// --- CALENDAR ---
 function setupCalendar() {
     const calGrid = document.getElementById('calendar-days');
     if (!calGrid) return;
-
     calGrid.innerHTML = '';
-    const daysInMonth = 28; // Simplified for demo
-
-    for (let i = 1; i <= daysInMonth; i++) {
+    const days = 28;
+    for (let i = 1; i <= days; i++) {
         const dateStr = `2026-02-${i.toString().padStart(2, '0')}`;
         const status = state.gymLogs[dateStr] || '';
-
         const dayEl = document.createElement('div');
-        dayEl.className = `cal-day ${status ? 'has-' + status : ''} ${i === 21 ? 'today' : ''}`;
+        dayEl.className = `cal-day ${status ? 'has-' + status : ''}`;
         dayEl.textContent = i;
-        dayEl.onclick = () => logGymDirect(dateStr);
         calGrid.appendChild(dayEl);
     }
 }
 
-function logGymDirect(date) {
-    const current = state.gymLogs[date];
-    if (!current) state.gymLogs[date] = 'done';
-    else if (current === 'done') state.gymLogs[date] = 'missed';
-    else delete state.gymLogs[date];
-    renderGym();
+// --- CHARTS ---
+function initAllocChart() {
+    const ctx = document.getElementById('assetAllocationChart').getContext('2d');
+    state.allocationChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Stock', 'Crypto', 'Cash'],
+            datasets: [{
+                data: [40, 30, 30],
+                backgroundColor: ['#0A84FF', '#FFD60A', '#32D74B'],
+                borderWidth: 0,
+                cutout: '75%'
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 }
 
-// --- MODALS ---
+function updateAllocChart() {
+    const totals = { stock: 0, crypto: 0, bank: 0 };
+    state.assets.forEach(a => totals[a.type] += (a.value * a.price));
+    state.allocationChart.data.datasets[0].data = [totals.stock, totals.crypto, totals.bank];
+    state.allocationChart.update();
+}
+
+// --- MODAL & SAVE ---
 function openModal(type) {
-    state.tempImage = null;
     document.getElementById('action-modal').classList.add('active');
     document.querySelectorAll('.form-section').forEach(f => f.classList.add('hidden'));
-    document.getElementById(`form-${type}`).classList.remove('hidden');
-    document.getElementById('modal-title').textContent = `New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+    document.getElementById(`form-${type === 'task' ? 'gym' : type}`).classList.remove('hidden');
+    document.getElementById('modal-title').textContent = type === 'asset' ? "New Transaction" : "New Record";
+    if (state.menuOpen) toggleMenu();
 }
 
 function closeModal() {
@@ -168,114 +191,21 @@ function closeModal() {
 }
 
 function saveGym() {
+    const weight = parseInt(document.getElementById('gym-weight').value);
     const name = document.getElementById('gym-name').value;
-    const status = document.getElementById('grid-status')?.value || 'done';
-    // Fallback if the element name changed
-    const finalStatus = document.getElementById('gym-status').value;
-
-    if (name) {
-        const dateStr = new Date().toISOString().split('T')[0];
-        state.gymLogs[dateStr] = finalStatus;
-        closeModal();
-        renderAll();
+    if (weight > 0) {
+        if (name.toLowerCase().includes('bench')) state.prWall.bench = weight;
+        if (name.toLowerCase().includes('dead')) state.prWall.dead = weight;
+        if (name.toLowerCase().includes('squat')) state.prWall.squat = weight;
     }
-}
-
-function handleImageUpload(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            state.tempImage = e.target.result;
-            document.getElementById('image-preview').innerHTML = `<img src="${state.tempImage}" style="width:50px; height:50px; border-radius:10px; margin-top:10px;">`;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
+    const today = new Date().toISOString().split('T')[0];
+    state.gymLogs[today] = 'done';
+    closeModal();
+    renderAll();
 }
 
 function saveAsset() {
-    const name = document.getElementById('asset-name').value;
-    const type = document.getElementById('asset-type').value;
-    const value = parseFloat(document.getElementById('asset-value').value);
-    const price = parseFloat(document.getElementById('asset-price').value);
-
-    if (name && value && price) {
-        state.assets.push({
-            id: Date.now(),
-            name, type, value, price,
-            img: state.tempImage || `https://logo.clearbit.com/${name.toLowerCase().replace(' ', '')}.com`
-        });
-        closeModal();
-        renderAll();
-    }
-}
-
-function saveEarning() {
-    const amount = parseFloat(document.getElementById('earning-amount').value);
-    if (!isNaN(amount)) {
-        state.earnings.unshift({
-            date: new Date().toISOString().split('T')[0],
-            amount: amount
-        });
-        closeModal();
-        renderAll();
-    }
-}
-
-function filterAssets(type) {
-    document.querySelectorAll('.asset-tabs button').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.toLowerCase() === type || (type === 'all' && btn.textContent === 'All')) {
-            btn.classList.add('active');
-        }
-    });
-
-    const list = document.getElementById('wealth-assets-list');
-    const filtered = type === 'all' ? state.assets : state.assets.filter(a => a.type === type);
-
-    list.innerHTML = filtered.map(a => `
-        <div class="asset-card">
-            <div class="a-left">
-                <img src="${a.img || 'https://via.placeholder.com/50'}" class="a-img" alt="">
-                <div>
-                    <p class="a-name">${a.name}</p>
-                    <p class="a-type">${a.type}</p>
-                </div>
-            </div>
-            <div class="a-right">
-                <p class="a-val">$${(a.value * a.price).toLocaleString()}</p>
-                <p class="a-sub">+0.00%</p>
-            </div>
-        </div>
-    `).join('');
-    lucide.createIcons();
-}
-
-// --- CHARTS ---
-function initChart() {
-    const ctx = document.getElementById('growthChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Net Worth',
-                data: [45000, 48000, 52000, 51000, 58000, 62000],
-                borderColor: '#007aff',
-                backgroundColor: 'rgba(0, 122, 255, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 3,
-                pointRadius: 0
-            }]
-        },
-        options: {
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { display: false },
-                y: { display: false }
-            },
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
+    // Basic implementation for demo
+    closeModal();
+    renderAll();
 }

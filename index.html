@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Finance & Fitness</title>
+    <title>Mastery - Soul, Health, Wealth</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,93 +14,101 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
+<body class="dark-theme">
     <div class="app-container">
 
-        <!-- 1. HOME VIEW (DAILY TASKS) -->
+        <!-- 1. HOME VIEW (DAILY MISSIONS & XP) -->
         <main id="home-view" class="view active">
             <header class="ios-header-vibrant">
                 <div class="header-top">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar">
-                    <div class="header-center">
-                        <span class="greeting">Good Evening,</span>
-                        <h2 class="user-name">Yu Hong</h2>
+                    <div class="user-info">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar">
+                        <div class="xp-stack">
+                            <span class="rank">LEVEL 12 ARCHON</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" style="width: 65%;"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="header-btn"><i data-lucide="bell"></i></div>
+                    <div class="streak-badge">
+                        <i data-lucide="flame"></i>
+                        <span id="streak-days">7</span>
+                    </div>
                 </div>
                 <div class="net-worth-card">
                     <p>Total Net Worth</p>
                     <h1 id="home-net-worth">$0.00</h1>
                     <div class="target-chip">
-                        <i data-lucide="award"></i>
-                        <span>Target: $1.0M</span>
+                        <i data-lucide="crosshair"></i>
+                        <span>1.0M Goal</span>
                     </div>
                 </div>
             </header>
 
             <section class="daily-tasks-section">
                 <div class="section-title">
-                    <h3>Daily Missions</h3>
+                    <h3>Daily Self-Discipline</h3>
                     <span id="task-count">0/3</span>
                 </div>
                 <div id="tasks-list" class="tasks-container">
-                    <!-- Tasks injected here -->
-                </div>
-            </section>
-
-            <section class="gym-preview-card" onclick="showView('gym')">
-                <div class="preview-content">
-                    <div class="p-icon"><i data-lucide="flame"></i></div>
-                    <div class="p-info">
-                        <h4>Workout streak</h4>
-                        <p>3 days consistent!</p>
-                    </div>
-                </div>
-                <div class="mini-calendar-dots" id="mini-cal-preview">
-                    <!-- Dots for last 5 days -->
+                    <!-- Tasks injected -->
                 </div>
             </section>
         </main>
 
-        <!-- 2. GYM VIEW (CALENDAR) -->
+        <!-- 2. GYM VIEW (LOGS & PR WALL) -->
         <main id="gym-view" class="view">
-            <header class="ios-header-white">
+            <header class="ios-header-transparent">
                 <i data-lucide="chevron-left" class="back-icon" onclick="showView('home')"></i>
-                <h1>Training Log</h1>
-                <i data-lucide="plus" class="add-icon" onclick="openModal('gym')"></i>
+                <h1>Growth Engine</h1>
+                <div class="header-right"></div>
             </header>
 
-            <div class="calendar-card">
-                <div class="calendar-header">
-                    <h3 id="cal-month-year">February 2026</h3>
-                    <div class="cal-nav">
-                        <i data-lucide="chevron-left"></i>
-                        <i data-lucide="chevron-right"></i>
-                    </div>
+            <div class="pr-wall">
+                <div class="pr-card">
+                    <span class="label">Bench</span>
+                    <span class="val" id="pr-bench">100kg</span>
                 </div>
-                <div class="calendar-grid-header">
-                    <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                <div class="pr-card">
+                    <span class="label">Deadlift</span>
+                    <span class="val" id="pr-dead">140kg</span>
                 </div>
+                <div class="pr-card">
+                    <span class="label">Squat</span>
+                    <span class="val" id="pr-squat">120kg</span>
+                </div>
+            </div>
+
+            <div class="calendar-card dark">
                 <div id="calendar-days" class="calendar-grid">
-                    <!-- Calendar days injected here -->
+                    <!-- Calendar days -->
                 </div>
             </div>
 
             <section class="records-section">
-                <h3>Today's Activity</h3>
-                <div id="gym-records-list" class="activity-list">
-                    <!-- Activity records -->
+                <div class="section-title">
+                    <h3>Activity History</h3>
                 </div>
+                <div id="gym-records-list" class="activity-list"></div>
             </section>
         </main>
 
-        <!-- 3. WEALTH VIEW (STOCKS, CRYPTO, BANK) -->
+        <!-- 3. WEALTH VIEW (ASSETS & ALLOCATION) -->
         <main id="wealth-view" class="view">
-            <header class="ios-header-white">
-                <i data-lucide="search" class="search-icon"></i>
-                <h1>My Assets</h1>
-                <i data-lucide="plus" class="add-icon" onclick="openModal('asset')"></i>
+            <header class="ios-header-transparent">
+                <h1>Empire</h1>
+                <div class="header-right"></div>
             </header>
+
+            <div class="allocation-section">
+                <div class="chart-box">
+                    <canvas id="assetAllocationChart"></canvas>
+                </div>
+                <div class="allocation-stats">
+                    <div class="stat-mini"><span class="label">DCA AVG</span><span id="dca-cost">$4.2k</span></div>
+                    <div class="stat-mini"><span class="label">ROI</span><span class="val positive">+18%</span></div>
+                </div>
+            </div>
 
             <div class="asset-tabs">
                 <button class="active" onclick="filterAssets('all')">All</button>
@@ -110,127 +118,114 @@
             </div>
 
             <section class="assets-scroll">
-                <div id="wealth-assets-list" class="assets-stack">
-                    <!-- Asset items -->
-                </div>
+                <div id="wealth-assets-list" class="assets-stack"></div>
             </section>
         </main>
 
-        <!-- 4. PROGRESS VIEW (VISUALS & 1M GOAL) -->
+        <!-- 4. SOUL VIEW (TIME & WISDOM) -->
         <main id="progress-view" class="view">
-            <header class="ios-header-white">
-                <h1>Financial Soul</h1>
-                <i data-lucide="share-2" class="share-icon"></i>
+            <header class="ios-header-transparent">
+                <h1>Prophecy</h1>
+                <div class="header-right"></div>
             </header>
 
-            <section class="growth-chart-card">
-                <div class="chart-header">
-                    <h3>Wealth Growth</h3>
-                    <div class="percentage-up">+12.5%</div>
+            <section class="goal-countdown">
+                <div class="countdown-radial">
+                    <div class="inner-circle">
+                        <p>ETA to $1M</p>
+                        <h2 id="time-prediction">5.4</h2>
+                        <span>YEARS</span>
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="growthChart"></canvas>
+                <div class="velocity-info">
+                    <p>Current Savings Velocity</p>
+                    <h4>$2,450 / month</h4>
                 </div>
             </section>
 
-            <section class="milestone-card">
-                <div class="milestone-top">
-                    <div class="m-left">
-                        <p>1 Million USD Goal</p>
-                        <h2 id="milestone-remaining">$1,000,000 to go</h2>
-                    </div>
-                    <div class="m-right">
-                        <div class="radial-progress" id="milestone-radial">
-                            <span id="milestone-percent">0%</span>
-                        </div>
-                    </div>
+            <section class="soul-wisdom">
+                <div class="motto-card">
+                    <i data-lucide="quote"></i>
+                    <p>"The best time to plant a tree was 20 years ago. The second best time is now."</p>
                 </div>
-                <div class="projection-box">
-                    <i data-lucide="clock"></i>
-                    <p>Estimated reach in <span id="time-prediction">??</span> years</p>
-                </div>
-            </section>
 
-            <section class="daily-earnings">
-                <div class="earnings-header">
-                    <h3>Daily P&L</h3>
-                    <button class="add-earning-btn" onclick="openModal('earning')">Add Daily</button>
-                </div>
-                <div id="earnings-list" class="earnings-stack">
-                    <!-- Daily earnings -->
+                <div class="opportunity-cost-card">
+                    <div class="oc-header">
+                        <i data-lucide="alert-triangle"></i>
+                        <span>Impulse Spending Warning</span>
+                    </div>
+                    <div class="oc-body">
+                        <p>Total unnecessary spend: <strong id="junk-total">$120</strong></p>
+                        <p class="oc-future">Future value in BTC @ 5 yrs: <span id="future-btc">$840</span></p>
+                    </div>
                 </div>
             </section>
         </main>
 
-        <!-- SHARED MODAL -->
+        <!-- FLOATING ACTION MENU -->
+        <div id="floating-menu" class="menu-overlay">
+            <div class="menu-items">
+                <button class="menu-item" onclick="openModal('asset')">
+                    <div class="m-icon"><i data-lucide="landmark"></i></div>
+                    <span>Invest / Spend</span>
+                </button>
+                <button class="menu-item" onclick="openModal('gym')">
+                    <div class="m-icon"><i data-lucide="dumbbell"></i></div>
+                    <span>Gym Session</span>
+                </button>
+                <button class="menu-item" onclick="openModal('task')">
+                    <div class="m-icon"><i data-lucide="check-square"></i></div>
+                    <span>Add Mission</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SHARED MODAL (iOS Style) -->
         <div id="action-modal" class="modal-overlay">
-            <div class="modal-content">
-                <div class="drag-handle"></div>
+            <div class="modal-content dark">
                 <div class="modal-header">
                     <h2 id="modal-title">New Entry</h2>
                     <i data-lucide="x" onclick="closeModal()"></i>
                 </div>
                 <div class="modal-body">
-                    <!-- Form Gym -->
                     <div id="form-gym" class="form-section hidden">
-                        <input type="text" id="gym-name" placeholder="Workout Name">
-                        <select id="gym-status">
-                            <option value="done">Completed</option>
-                            <option value="missed">Missed</option>
-                        </select>
-                        <button class="save-btn" onclick="saveGym()">Log Workout</button>
+                        <input type="text" id="gym-name" placeholder="Workout/PR">
+                        <input type="number" id="gym-weight" placeholder="Weight (kg)">
+                        <button class="save-btn" onclick="saveGym()">Log Growth</button>
                     </div>
-                    <!-- Form Asset -->
                     <div id="form-asset" class="form-section hidden">
-                        <input type="text" id="asset-name" placeholder="Asset (TSLA, BTC, Maybank)">
+                        <input type="text" id="asset-name" placeholder="Asset Name">
                         <select id="asset-type">
-                            <option value="bank">Bank</option>
+                            <option value="bank">Bank/Expense</option>
                             <option value="stock">US Stock</option>
                             <option value="crypto">Crypto</option>
                         </select>
-                        <input type="number" id="asset-value" placeholder="Amount (Units)">
-                        <input type="number" id="asset-price" placeholder="Current Price (USD)">
-
-                        <div class="upload-area" onclick="document.getElementById('asset-image-input').click()">
-                            <i data-lucide="image"></i>
-                            <span>Upload Icon (Optional)</span>
-                            <input type="file" id="asset-image-input" hidden onchange="handleImageUpload(this)">
-                        </div>
-                        <div id="image-preview"></div>
-
-                        <button class="save-btn" onclick="saveAsset()">Add Asset</button>
-                    </div>
-                    <!-- Form Earning -->
-                    <div id="form-earning" class="form-section hidden">
-                        <input type="number" id="earning-amount" placeholder="Daily Profit/Loss ($)">
-                        <button class="save-btn" onclick="saveEarning()">Log Earning</button>
+                        <input type="number" id="asset-value" placeholder="Amount">
+                        <input type="number" id="asset-price" placeholder="Price">
+                        <button class="save-btn" onclick="saveAsset()">Execute</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- NAV BAR (GLASS) -->
-        <nav class="ios-nav">
+        <!-- NAV BAR -->
+        <nav class="ios-nav glass">
             <div class="nav-item active" onclick="showView('home')">
-                <i data-lucide="layout-grid"></i>
-                <span>Home</span>
+                <i data-lucide="grid"></i>
             </div>
             <div class="nav-item" onclick="showView('gym')">
-                <i data-lucide="activity"></i>
-                <span>Gym</span>
+                <i data-lucide="dumbbell"></i>
             </div>
             <div class="nav-extra">
-                <div class="center-btn" onclick="openModal('asset')">
-                    <i data-lucide="plus"></i>
+                <div class="center-btn" onclick="toggleMenu()">
+                    <i data-lucide="plus" id="plus-icon"></i>
                 </div>
             </div>
             <div class="nav-item" onclick="showView('wealth')">
-                <i data-lucide="briefcase"></i>
-                <span>Wealth</span>
+                <i data-lucide="bar-chart-3"></i>
             </div>
             <div class="nav-item" onclick="showView('progress')">
-                <i data-lucide="line-chart"></i>
-                <span>Soul</span>
+                <i data-lucide="compass"></i>
             </div>
         </nav>
     </div>
