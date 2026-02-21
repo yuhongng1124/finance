@@ -1,186 +1,181 @@
-// 1. STATE MANAGEMENT
+// --- STATE ---
 let state = {
-    gym: [
-        { id: 1, name: "Bench Press", weight: 80, reps: 10, date: "2026-02-21" },
-        { id: 2, name: "Squats", weight: 120, reps: 8, date: "2026-02-20" }
+    tasks: [
+        { id: 1, text: "Push 100kg Bench", done: false },
+        { id: 2, text: "Buy TSLA dip", done: true },
+        { id: 3, text: "Log daily earnings", done: false }
     ],
+    gymLogs: {
+        "2026-02-18": "done",
+        "2026-02-19": "done",
+        "2026-02-20": "missed",
+        "2026-02-21": "done"
+    },
     assets: [
-        { id: 1, name: "Maybank Savings", type: "bank", value: 5400, price: 1 },
-        { id: 2, name: "Tesla (TSLA)", type: "stock", value: 10, price: 850 }
+        { id: 1, name: "Tesla (TSLA)", type: "stock", value: 10, price: 850, img: "https://logo.clearbit.com/tesla.com" },
+        { id: 2, name: "Bitcoin", type: "crypto", value: 0.1, price: 52000, img: "https://cryptologos.cc/logos/bitcoin-btc-logo.png" },
+        { id: 3, name: "Maybank", type: "bank", value: 5000, price: 1, img: "https://logo.clearbit.com/maybank.com" }
     ],
-    goals: [
-        { id: 1, name: "New iPhone 17 Pro", current: 1500, target: 4500 }
-    ]
+    earnings: [
+        { date: "2026-02-21", amount: 150 },
+        { date: "2026-02-20", amount: -40 },
+        { date: "2026-02-19", amount: 200 }
+    ],
+    targetGoal: 1000000, // 1 Million USD
+    tempImage: null
 };
 
-// 2. VIEW CONTROLLER
-function showView(viewId) {
-    // Hide all views
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    // Show target view
-    const target = document.getElementById(`${viewId}-view`);
-    if (target) target.classList.add('active');
+// --- INITIALIZE & VIEW CONTROL ---
+document.addEventListener('DOMContentLoaded', () => {
+    initChart();
+    renderAll();
+    setupCalendar();
+});
 
-    // Update Nav Icons
+function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(`${viewId}-view`).classList.add('active');
+
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
-        if (item.getAttribute('onclick')?.includes(viewId)) {
-            item.classList.add('active');
-        }
+        if (item.getAttribute('onclick').includes(viewId)) item.classList.add('active');
     });
 
-    // Refresh contents
     renderAll();
-}
-
-// 3. RENDERING LOGIC
-function renderAll() {
-    renderDashboard();
-    renderGym();
-    renderWealth();
-    renderGoals();
     lucide.createIcons();
 }
 
-function renderDashboard() {
-    const totalNetWorth = state.assets.reduce((sum, asset) => sum + (asset.value * asset.price), 0);
-    document.getElementById('total-net-worth').textContent = `$${totalNetWorth.toLocaleString()}`;
+// --- RENDERERS ---
+function renderAll() {
+    renderHome();
+    renderGym();
+    renderWealth();
+    renderProgress();
+}
 
-    // Last Workout
-    const lastWorkout = state.gym[state.gym.length - 1];
-    if (lastWorkout) {
-        document.getElementById('last-workout').textContent = `${lastWorkout.name} - ${lastWorkout.weight}kg`;
-    }
+function renderHome() {
+    const total = calculateTotalNetWorth();
+    document.getElementById('home-net-worth').textContent = `$${total.toLocaleString()}`;
 
-    // Recent Assets Preview
-    const previewContainer = document.getElementById('asset-list-preview');
-    previewContainer.innerHTML = state.assets.slice(0, 3).map(asset => `
-        <div class="list-item">
-            <div class="item-icon" style="background: ${asset.type === 'stock' ? 'rgba(54,185,80,0.1)' : 'rgba(88,166,255,0.1)'}">
-                ${asset.name.charAt(0)}
-            </div>
-            <div class="card-info">
-                <h4>${asset.name}</h4>
-                <p>${asset.type.toUpperCase()}</p>
-            </div>
-            <div style="flex:1; text-align:right; font-weight:700;">
-                $${(asset.value * asset.price).toLocaleString()}
-            </div>
+    const taskList = document.getElementById('tasks-list');
+    taskList.innerHTML = state.tasks.map(task => `
+        <div class="task-item ${task.done ? 'done' : ''}" onclick="toggleTask(${task.id})">
+            <div class="task-checkbox">${task.done ? '<i data-lucide="check"></i>' : ''}</div>
+            <span class="task-text">${task.text}</span>
         </div>
     `).join('');
+
+    const doneCount = state.tasks.filter(t => t.done).length;
+    document.getElementById('task-count').textContent = `${doneCount}/${state.tasks.length}`;
 }
 
 function renderGym() {
-    const list = document.getElementById('gym-records-list');
-    if (!list) return;
-    list.innerHTML = state.gym.slice().reverse().map(record => `
-        <div class="log-item">
-            <div class="log-main">
-                <h4>${record.name}</h4>
-                <p class="log-meta">${record.date} • ${record.weight}kg x ${record.reps}</p>
-            </div>
-            <span class="log-badge">Completed</span>
-        </div>
-    `).join('');
+    setupCalendar();
 }
 
 function renderWealth() {
-    const list = document.getElementById('assets-full-list');
-    const totalDisp = document.getElementById('total-balance-wealth');
-    if (!list) return;
-
-    const total = state.assets.reduce((sum, a) => sum + (a.value * a.price), 0);
-    totalDisp.textContent = `$${total.toLocaleString()}`;
-
-    list.innerHTML = state.assets.map(asset => `
-        <div class="asset-item">
-            <div class="asset-left">
-                <div class="asset-icon-box">
-                    <i data-lucide="${asset.type === 'stock' ? 'trending-up' : 'wallet'}"></i>
-                </div>
+    const list = document.getElementById('wealth-assets-list');
+    list.innerHTML = state.assets.map(a => `
+        <div class="asset-card">
+            <div class="a-left">
+                <img src="${a.img || 'https://via.placeholder.com/50'}" class="a-img" alt="">
                 <div>
-                    <p class="asset-name">${asset.name}</p>
-                    <p class="asset-sub">${asset.type === 'stock' ? `${asset.value} shares @ $${asset.price}` : 'Liquid Cash'}</p>
+                    <p class="a-name">${a.name}</p>
+                    <p class="a-type">${a.type}</p>
                 </div>
             </div>
-            <div class="asset-right">
-                <p class="asset-price">$${(asset.value * asset.price).toLocaleString()}</p>
-                <p class="asset-change positive">+0.00%</p>
+            <div class="a-right">
+                <p class="a-val">$${(a.value * a.price).toLocaleString()}</p>
+                <p class="a-sub">+0.00%</p>
             </div>
         </div>
     `).join('');
 }
 
-function renderGoals() {
-    const list = document.getElementById('goals-list');
-    const progText = document.getElementById('goal-progress');
-    if (!list) return;
+function renderProgress() {
+    const total = calculateTotalNetWorth();
+    const remaining = Math.max(0, state.targetGoal - total);
+    document.getElementById('milestone-remaining').textContent = `$${remaining.toLocaleString()} to go`;
 
-    if (state.goals.length > 0) {
-        const primary = state.goals[0];
-        const pct = Math.round((primary.current / primary.target) * 100);
-        progText.textContent = `${pct}% to ${primary.name}`;
-    }
+    const pct = Math.min(100, (total / state.targetGoal) * 100).toFixed(1);
+    document.getElementById('milestone-percent').textContent = `${pct}%`;
 
-    list.innerHTML = state.goals.map(goal => {
-        const pct = Math.min(100, Math.round((goal.current / goal.target) * 100));
-        return `
-            <div class="goal-card">
-                <div class="goal-title">${goal.name}</div>
-                <div class="goal-progress-bar">
-                    <div class="progress-fill" style="width: ${pct}%"></div>
-                </div>
-                <div class="goal-stats">
-                    <span>$${goal.current.toLocaleString()} saved</span>
-                    <span>Target: $${goal.target.toLocaleString()}</span>
-                </div>
-            </div>
-        `;
-    }).join('');
+    // Simple projection: if we save $10k a year...
+    const years = (remaining / 12000).toFixed(1);
+    document.getElementById('time-prediction').textContent = years;
+
+    const earnList = document.getElementById('earnings-list');
+    earnList.innerHTML = state.earnings.map(e => `
+        <div class="asset-card" style="padding: 12px 20px;">
+            <p style="font-weight:700;">${e.date}</p>
+            <p style="font-weight:800; color: ${e.amount >= 0 ? 'var(--ios-green)' : 'var(--ios-red)'}">
+                ${e.amount >= 0 ? '+' : ''}$${e.amount}
+            </p>
+        </div>
+    `).join('');
 }
 
-// 4. MODAL & FORM LOGIC
+// --- LOGIC HELPERS ---
+function calculateTotalNetWorth() {
+    return state.assets.reduce((sum, a) => sum + (a.value * a.price), 0);
+}
+
+function toggleTask(id) {
+    const task = state.tasks.find(t => t.id === id);
+    if (task) task.done = !task.done;
+    renderHome();
+    lucide.createIcons();
+}
+
+function setupCalendar() {
+    const calGrid = document.getElementById('calendar-days');
+    if (!calGrid) return;
+
+    calGrid.innerHTML = '';
+    const daysInMonth = 28; // Simplified for demo
+
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dateStr = `2026-02-${i.toString().padStart(2, '0')}`;
+        const status = state.gymLogs[dateStr] || '';
+
+        const dayEl = document.createElement('div');
+        dayEl.className = `cal-day ${status ? 'has-' + status : ''} ${i === 21 ? 'today' : ''}`;
+        dayEl.textContent = i;
+        dayEl.onclick = () => logGymDirect(dateStr);
+        calGrid.appendChild(dayEl);
+    }
+}
+
+function logGymDirect(date) {
+    const current = state.gymLogs[date];
+    if (!current) state.gymLogs[date] = 'done';
+    else if (current === 'done') state.gymLogs[date] = 'missed';
+    else delete state.gymLogs[date];
+    renderGym();
+}
+
+// --- MODALS ---
 function openModal(type) {
+    state.tempImage = null;
     document.getElementById('action-modal').classList.add('active');
-    document.querySelectorAll('.form-container').forEach(f => f.classList.add('hidden'));
-
-    if (type === 'gym') {
-        document.getElementById('modal-title').textContent = "New Workout";
-        document.getElementById('gym-form').classList.remove('hidden');
-    } else if (type === 'asset') {
-        document.getElementById('modal-title').textContent = "New Asset";
-        document.getElementById('asset-form').classList.remove('hidden');
-    } else if (type === 'goal') {
-        document.getElementById('modal-title').textContent = "Set Goal";
-        document.getElementById('goal-form').classList.remove('hidden');
-    }
-}
-
-function openActionMenu() {
-    // Default to gym or show a picker
-    openModal('gym');
+    document.querySelectorAll('.form-section').forEach(f => f.classList.add('hidden'));
+    document.getElementById(`form-${type}`).classList.remove('hidden');
+    document.getElementById('modal-title').textContent = `New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
 }
 
 function closeModal() {
+    document.getElementById('action-modal').classList.remove('remove');
     document.getElementById('action-modal').classList.remove('active');
 }
 
-// --- SAVE ACTIONS ---
-function saveGymRecord() {
-    const name = document.getElementById('gym-exercise').value;
-    const weight = parseFloat(document.getElementById('gym-weight').value);
-    const reps = parseInt(document.getElementById('gym-reps').value);
-
-    if (name && weight) {
-        state.gym.push({
-            id: Date.now(),
-            name,
-            weight,
-            reps,
-            date: new Date().toISOString().split('T')[0]
-        });
-        closeModal();
-        renderAll();
+function handleImageUpload(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            state.tempImage = e.target.result;
+            document.getElementById('image-preview').innerHTML = `<img src="${state.tempImage}" style="width:50px; height:50px; border-radius:10px; margin-top:10px;">`;
+        };
+        reader.readAsDataURL(input.files[0]);
     }
 }
 
@@ -188,28 +183,57 @@ function saveAsset() {
     const name = document.getElementById('asset-name').value;
     const type = document.getElementById('asset-type').value;
     const value = parseFloat(document.getElementById('asset-value').value);
-    const price = parseFloat(document.getElementById('asset-price').value || 1);
+    const price = parseFloat(document.getElementById('asset-price').value);
 
-    if (name && value) {
-        state.assets.push({ id: Date.now(), name, type, value, price });
+    if (name && value && price) {
+        state.assets.push({
+            id: Date.now(),
+            name, type, value, price,
+            img: state.tempImage || `https://logo.clearbit.com/${name.toLowerCase().replace(' ', '')}.com`
+        });
         closeModal();
         renderAll();
     }
 }
 
-function saveGoal() {
-    const name = document.getElementById('goal-name').value;
-    const target = parseFloat(document.getElementById('goal-target').value);
-    const current = parseFloat(document.getElementById('goal-current').value || 0);
-
-    if (name && target) {
-        state.goals.push({ id: Date.now(), name, target, current });
+function saveEarning() {
+    const amount = parseFloat(document.getElementById('earning-amount').value);
+    if (!isNaN(amount)) {
+        state.earnings.unshift({
+            date: new Date().toISOString().split('T')[0],
+            amount: amount
+        });
         closeModal();
         renderAll();
     }
 }
 
-// 5. INITIALIZE
-document.addEventListener('DOMContentLoaded', () => {
-    renderAll();
-});
+// --- CHARTS ---
+function initChart() {
+    const ctx = document.getElementById('growthChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Net Worth',
+                data: [45000, 48000, 52000, 51000, 58000, 62000],
+                borderColor: '#007aff',
+                backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { display: false },
+                y: { display: false }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}

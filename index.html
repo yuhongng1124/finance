@@ -4,215 +4,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finance & Fitness - Life Planner</title>
+    <title>Elite Finance & Fitness</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
     <div class="app-container">
-        <!-- 1. DASHBOARD VIEW (HOME) -->
-        <main id="home-view" class="view active">
-            <header class="home-header">
-                <div class="header-top">
-                    <div class="profile-section">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar">
-                        <div class="status-dot"></div>
-                    </div>
-                    <div class="header-title">
-                        <h2>Overview</h2>
-                    </div>
-                    <i data-lucide="bell" class="header-icon"></i>
-                </div>
 
-                <div class="total-wealth-banner">
-                    <p class="banner-label">Net Wealth</p>
-                    <h1 id="total-net-worth">$0.00</h1>
-                    <div class="wealth-change positive">
-                        <i data-lucide="trending-up"></i>
-                        <span>+2.4% this month</span>
+        <!-- 1. HOME VIEW (DAILY TASKS) -->
+        <main id="home-view" class="view active">
+            <header class="ios-header-vibrant">
+                <div class="header-top">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profile" class="avatar">
+                    <div class="header-center">
+                        <span class="greeting">Good Evening,</span>
+                        <h2 class="user-name">Yu Hong</h2>
+                    </div>
+                    <div class="header-btn"><i data-lucide="bell"></i></div>
+                </div>
+                <div class="net-worth-card">
+                    <p>Total Net Worth</p>
+                    <h1 id="home-net-worth">$0.00</h1>
+                    <div class="target-chip">
+                        <i data-lucide="award"></i>
+                        <span>Target: $1.0M</span>
                     </div>
                 </div>
             </header>
 
-            <section class="dashboard-cards">
-                <div class="dash-card gym-summary" onclick="showView('gym')">
-                    <div class="card-icon"><i data-lucide="dumbbell"></i></div>
-                    <div class="card-info">
-                        <h3>Gym Track</h3>
-                        <p id="last-workout">No records yet</p>
-                    </div>
-                    <i data-lucide="chevron-right"></i>
+            <section class="daily-tasks-section">
+                <div class="section-title">
+                    <h3>Daily Missions</h3>
+                    <span id="task-count">0/3</span>
                 </div>
-                <div class="dash-card goal-summary" onclick="showView('goals')">
-                    <div class="card-icon"><i data-lucide="target"></i></div>
-                    <div class="card-info">
-                        <h3>Active Goal</h3>
-                        <p id="goal-progress">Set your first goal</p>
-                    </div>
-                    <div class="progress-ring-mini">30%</div>
+                <div id="tasks-list" class="tasks-container">
+                    <!-- Tasks injected here -->
                 </div>
             </section>
 
-            <section class="asset-preview">
-                <div class="section-header">
-                    <h2>Top Assets</h2>
-                    <span class="see-all" onclick="showView('wealth')">See All</span>
+            <section class="gym-preview-card" onclick="showView('gym')">
+                <div class="preview-content">
+                    <div class="p-icon"><i data-lucide="flame"></i></div>
+                    <div class="p-info">
+                        <h4>Workout streak</h4>
+                        <p>3 days consistent!</p>
+                    </div>
                 </div>
-                <div id="asset-list-preview" class="compact-list">
-                    <!-- Dynamic Assets -->
+                <div class="mini-calendar-dots" id="mini-cal-preview">
+                    <!-- Dots for last 5 days -->
                 </div>
             </section>
         </main>
 
-        <!-- 2. GYM TRACKER VIEW -->
+        <!-- 2. GYM VIEW (CALENDAR) -->
         <main id="gym-view" class="view">
-            <header class="section-top-header">
-                <i data-lucide="arrow-left" onclick="showView('home')"></i>
-                <h1>Gym Record</h1>
-                <div class="header-actions">
-                    <button class="add-btn" onclick="openModal('gym')"><i data-lucide="plus"></i></button>
-                </div>
+            <header class="ios-header-white">
+                <i data-lucide="chevron-left" class="back-icon" onclick="showView('home')"></i>
+                <h1>Training Log</h1>
+                <i data-lucide="plus" class="add-icon" onclick="openModal('gym')"></i>
             </header>
 
-            <div class="stats-overview">
-                <div class="stat-item">
-                    <span class="stat-val">12</span>
-                    <span class="stat-label">Workouts</span>
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <h3 id="cal-month-year">February 2026</h3>
+                    <div class="cal-nav">
+                        <i data-lucide="chevron-left"></i>
+                        <i data-lucide="chevron-right"></i>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-val">4.5k</span>
-                    <span class="stat-label">kg Lifted</span>
+                <div class="calendar-grid-header">
+                    <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                </div>
+                <div id="calendar-days" class="calendar-grid">
+                    <!-- Calendar days injected here -->
                 </div>
             </div>
 
-            <section class="workout-log">
-                <div class="date-filter">
-                    <span class="active">All</span>
-                    <span>Chest</span>
-                    <span>Legs</span>
-                    <span>Back</span>
-                </div>
-                <div id="gym-records-list" class="log-container">
-                    <!-- Dynamic Gym Records -->
+            <section class="records-section">
+                <h3>Today's Activity</h3>
+                <div id="gym-records-list" class="activity-list">
+                    <!-- Activity records -->
                 </div>
             </section>
         </main>
 
-        <!-- 3. WEALTH / CALCULATOR VIEW -->
+        <!-- 3. WEALTH VIEW (STOCKS, CRYPTO, BANK) -->
         <main id="wealth-view" class="view">
-            <header class="section-top-header">
-                <i data-lucide="arrow-left" onclick="showView('home')"></i>
-                <h1>Wealth & Stocks</h1>
-                <div class="header-actions">
-                    <button class="add-btn" onclick="openModal('asset')"><i data-lucide="plus"></i></button>
-                </div>
+            <header class="ios-header-white">
+                <i data-lucide="search" class="search-icon"></i>
+                <h1>My Assets</h1>
+                <i data-lucide="plus" class="add-icon" onclick="openModal('asset')"></i>
             </header>
 
-            <section class="calculator-section">
-                <div class="balance-card dark">
-                    <div class="balance-info">
-                        <h3>Current Balance</h3>
-                        <h2 id="total-balance-wealth">$0.00</h2>
-                    </div>
-                    <div class="asset-toggle">
-                        <button class="toggle-btn active">Cash</button>
-                        <button class="toggle-btn">Stocks</button>
-                    </div>
-                </div>
+            <div class="asset-tabs">
+                <button class="active" onclick="filterAssets('all')">All</button>
+                <button onclick="filterAssets('stock')">Stocks</button>
+                <button onclick="filterAssets('crypto')">Crypto</button>
+                <button onclick="filterAssets('bank')">Bank</button>
+            </div>
 
-                <div id="assets-full-list" class="full-list scrollable">
-                    <!-- Dynamic Assets -->
+            <section class="assets-scroll">
+                <div id="wealth-assets-list" class="assets-stack">
+                    <!-- Asset items -->
                 </div>
             </section>
         </main>
 
-        <!-- 4. GOALS VIEW -->
-        <main id="goals-view" class="view">
-            <header class="section-top-header">
-                <i data-lucide="arrow-left" onclick="showView('home')"></i>
-                <h1>My Goals</h1>
-                <div class="header-actions">
-                    <button class="add-btn" onclick="openModal('goal')"><i data-lucide="plus"></i></button>
-                </div>
+        <!-- 4. PROGRESS VIEW (VISUALS & 1M GOAL) -->
+        <main id="progress-view" class="view">
+            <header class="ios-header-white">
+                <h1>Financial Soul</h1>
+                <i data-lucide="share-2" class="share-icon"></i>
             </header>
 
-            <section class="goals-container">
-                <div id="goals-list" class="goals-list">
-                    <!-- Dynamic Goals -->
+            <section class="growth-chart-card">
+                <div class="chart-header">
+                    <h3>Wealth Growth</h3>
+                    <div class="percentage-up">+12.5%</div>
+                </div>
+                <canvas id="growthChart" height="200"></canvas>
+            </section>
+
+            <section class="milestone-card">
+                <div class="milestone-top">
+                    <div class="m-left">
+                        <p>1 Million USD Goal</p>
+                        <h2 id="milestone-remaining">$1,000,000 to go</h2>
+                    </div>
+                    <div class="m-right">
+                        <div class="radial-progress" id="milestone-radial">
+                            <span id="milestone-percent">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="projection-box">
+                    <i data-lucide="clock"></i>
+                    <p>Estimated reach in <span id="time-prediction">??</span> years</p>
+                </div>
+            </section>
+
+            <section class="daily-earnings">
+                <div class="earnings-header">
+                    <h3>Daily P&L</h3>
+                    <button class="add-earning-btn" onclick="openModal('earning')">Add Daily</button>
+                </div>
+                <div id="earnings-list" class="earnings-stack">
+                    <!-- Daily earnings -->
                 </div>
             </section>
         </main>
 
-        <!-- MODAL FOR ADDING ITEMS -->
+        <!-- SHARED MODAL -->
         <div id="action-modal" class="modal-overlay">
             <div class="modal-content">
+                <div class="drag-handle"></div>
                 <div class="modal-header">
-                    <h2 id="modal-title">Add Data</h2>
+                    <h2 id="modal-title">New Entry</h2>
                     <i data-lucide="x" onclick="closeModal()"></i>
                 </div>
                 <div class="modal-body">
-                    <div id="gym-form" class="form-container hidden">
-                        <input type="text" id="gym-exercise" placeholder="Exercise (e.g. Bench Press)">
-                        <div class="input-row">
-                            <input type="number" id="gym-weight" placeholder="Weight (kg)">
-                            <input type="number" id="gym-reps" placeholder="Reps">
-                        </div>
-                        <button class="submit-btn" onclick="saveGymRecord()">Save Workout</button>
-                    </div>
-                    <div id="asset-form" class="form-container hidden">
-                        <input type="text" id="asset-name" placeholder="Name (e.g. Maybank, TSLA)">
-                        <select id="asset-type">
-                            <option value="bank">Bank/Cash</option>
-                            <option value="stock">Stock</option>
+                    <!-- Form Gym -->
+                    <div id="form-gym" class="form-section hidden">
+                        <input type="text" id="gym-name" placeholder="Workout Name">
+                        <select id="gym-status">
+                            <option value="done">Completed</option>
+                            <option value="missed">Missed</option>
                         </select>
-                        <input type="number" id="asset-value" placeholder="Amount / Quantity">
-                        <input type="number" id="asset-price" placeholder="Price (if Stock)">
-                        <button class="submit-btn" onclick="saveAsset()">Add Asset</button>
+                        <button class="save-btn" onclick="saveGym()">Log Workout</button>
                     </div>
-                    <div id="goal-form" class="form-container hidden">
-                        <input type="text" id="goal-name" placeholder="Goal (e.g. Buy Car, 100kg Bench)">
-                        <input type="number" id="goal-target" placeholder="Target Value">
-                        <input type="number" id="goal-current" placeholder="Current Progress">
-                        <button class="submit-btn" onclick="saveGoal()">Create Goal</button>
+                    <!-- Form Asset -->
+                    <div id="form-asset" class="form-section hidden">
+                        <input type="text" id="asset-name" placeholder="Asset (TSLA, BTC, Maybank)">
+                        <select id="asset-type">
+                            <option value="bank">Bank</option>
+                            <option value="stock">US Stock</option>
+                            <option value="crypto">Crypto</option>
+                        </select>
+                        <input type="number" id="asset-value" placeholder="Amount (Units)">
+                        <input type="number" id="asset-price" placeholder="Current Price (USD)">
+
+                        <div class="upload-area" onclick="document.getElementById('asset-image-input').click()">
+                            <i data-lucide="image"></i>
+                            <span>Upload Icon (Optional)</span>
+                            <input type="file" id="asset-image-input" hidden onchange="handleImageUpload(this)">
+                        </div>
+                        <div id="image-preview"></div>
+
+                        <button class="save-btn" onclick="saveAsset()">Add Asset</button>
+                    </div>
+                    <!-- Form Earning -->
+                    <div id="form-earning" class="form-section hidden">
+                        <input type="number" id="earning-amount" placeholder="Daily Profit/Loss ($)">
+                        <button class="save-btn" onclick="saveEarning()">Log Earning</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- NAVIGATION -->
-        <nav class="bottom-nav">
+        <!-- NAV BAR (GLASS) -->
+        <nav class="ios-nav">
             <div class="nav-item active" onclick="showView('home')">
-                <i data-lucide="home"></i>
+                <i data-lucide="layout-grid"></i>
                 <span>Home</span>
             </div>
             <div class="nav-item" onclick="showView('gym')">
-                <i data-lucide="dumbbell"></i>
+                <i data-lucide="activity"></i>
                 <span>Gym</span>
             </div>
-            <div class="nav-center">
-                <div class="swap-btn" onclick="openActionMenu()">
+            <div class="nav-extra">
+                <div class="center-btn" onclick="openModal('asset')">
                     <i data-lucide="plus"></i>
                 </div>
             </div>
             <div class="nav-item" onclick="showView('wealth')">
-                <i data-lucide="calculator"></i>
+                <i data-lucide="briefcase"></i>
                 <span>Wealth</span>
             </div>
-            <div class="nav-item" onclick="showView('goals')">
-                <i data-lucide="target"></i>
-                <span>Goals</span>
+            <div class="nav-item" onclick="showView('progress')">
+                <i data-lucide="line-chart"></i>
+                <span>Soul</span>
             </div>
         </nav>
     </div>
 
     <script src="script.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 
 </html>
